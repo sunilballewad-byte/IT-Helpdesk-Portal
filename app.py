@@ -11,6 +11,12 @@ db.init_app(app)
 def home():
     return render_template("login.html")
 
+
+@app.route("/dashboard")
+def dashboard():
+    return render_template("dashboard.html")
+
+
 with app.app_context():
     db.create_all()
 

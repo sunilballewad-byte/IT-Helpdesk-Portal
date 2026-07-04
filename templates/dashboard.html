@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h2>Welcome to IT Helpdesk Portal</h2>
+
+    <hr>
+
+    <div class="row">
+
+        <div class="col-md-3">
+            <div class="card shadow p-3">
+                <h5>Total Tickets</h5>
+                <h2>0</h2>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow p-3">
+                <h5>Open</h5>
+                <h2>0</h2>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow p-3">
+                <h5>Closed</h5>
+                <h2>0</h2>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow p-3">
+                <h5>Pending</h5>
+                <h2>0</h2>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
