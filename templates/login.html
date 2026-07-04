@@ -1,23 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IT Helpdesk Portal</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-    <h1>IT Helpdesk Portal</h1>
+{% block title %}Login{% endblock %}
 
-    <form>
-        <label>Email</label><br>
-        <input type="email" placeholder="Enter your email"><br><br>
+{% block content %}
 
-        <label>Password</label><br>
-        <input type="password" placeholder="Enter your password"><br><br>
+<div class="container vh-100 d-flex justify-content-center align-items-center">
+    <div class="card shadow p-4" style="width:400px;">
 
-        <button type="submit">Login</button>
-    </form>
+        <h2 class="text-center mb-4">IT Helpdesk Portal</h2>
 
-</body>
-</html>
+        <form>
+            <div class="mb-3">
+                <label>Email</label>
+                <input type="email" class="form-control" placeholder="Enter email">
+            </div>
+
+            <div class="mb-3">
+                <label>Password</label>
+                <input type="password" class="form-control" placeholder="Enter password">
+            </div>
+
+            <button class="btn btn-primary w-100">
+                Login
+            </button>
+
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}
