@@ -1,32 +1,27 @@
-{% extends "base.html" %}
+<form method="POST" action="/login">
 
-{% block title %}Login{% endblock %}
-
-{% block content %}
-
-<div class="container vh-100 d-flex justify-content-center align-items-center">
-    <div class="card shadow p-4" style="width:400px;">
-
-        <h2 class="text-center mb-4">IT Helpdesk Portal</h2>
-
-        <form>
-            <div class="mb-3">
-                <label>Email</label>
-                <input type="email" class="form-control" placeholder="Enter email">
-            </div>
-
-            <div class="mb-3">
-                <label>Password</label>
-                <input type="password" class="form-control" placeholder="Enter password">
-            </div>
-
-            <button class="btn btn-primary w-100">
-                Login
-            </button>
-
-        </form>
-
+    <div class="mb-3">
+        <label>Email</label>
+        <input
+            type="email"
+            name="email"
+            class="form-control"
+            placeholder="Enter Email"
+            required>
     </div>
-</div>
 
-{% endblock %}
+    <div class="mb-3">
+        <label>Password</label>
+        <input
+            type="password"
+            name="password"
+            class="form-control"
+            placeholder="Enter Password"
+            required>
+    </div>
+
+    <button class="btn btn-primary w-100">
+        Login
+    </button>
+
+</form>
