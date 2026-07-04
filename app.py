@@ -1,21 +1,18 @@
 from flask import Flask, render_template
 from config import Config
 from models import db
+from routes.auth import auth
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
 db.init_app(app)
 
-@app.route("/")
-def home():
-    return render_template("login.html")
-
+app.register_blueprint(auth)
 
 @app.route("/dashboard")
 def dashboard():
     return render_template("dashboard.html")
-
 
 with app.app_context():
     db.create_all()
