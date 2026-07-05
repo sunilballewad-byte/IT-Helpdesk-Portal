@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for
+from sqlalchemy import or_
 from models import db, Ticket
 import random
 
@@ -7,10 +8,23 @@ tickets = Blueprint("tickets", __name__)
 
 @tickets.route("/tickets")
 def view_tickets():
-    ticket_list = Ticket.query.order_by(Ticket.id.desc()).all()
+    search = request.args.get("search", "").strip()
+
+    if search:
+        ticket_list = Ticket.query.filter(
+            or_(
+                Ticket.title.contains(search),
+                Ticket.ticket_number.contains(search),
+                Ticket.category.contains(search)
+            )
+        ).order_by(Ticket.id.desc()).all()
+    else:
+        ticket_list = Ticket.query.order_by(Ticket.id.desc()).all()
+
     return render_template(
         "view_tickets.html",
-        tickets=ticket_list
+        tickets=ticket_list,
+        search=search
     )
 
 
@@ -56,7 +70,7 @@ def edit_ticket(id):
     )
 
 
-@tickets.route("/tickets/delete/<int:id>", methods=["POST", "GET"])
+@tickets.route("/tickets/delete/<int:id>", methods=["GET", "POST"])
 def delete_ticket(id):
     ticket = Ticket.query.get_or_404(id)
 
