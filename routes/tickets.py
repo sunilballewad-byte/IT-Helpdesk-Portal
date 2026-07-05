@@ -54,3 +54,13 @@ def edit_ticket(id):
         "edit_ticket.html",
         ticket=ticket
     )
+
+
+@tickets.route("/tickets/delete/<int:id>", methods=["POST", "GET"])
+def delete_ticket(id):
+    ticket = Ticket.query.get_or_404(id)
+
+    db.session.delete(ticket)
+    db.session.commit()
+
+    return redirect(url_for("tickets.view_tickets"))
