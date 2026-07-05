@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Ticket{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+<h2>Edit Ticket</h2>
+
+<hr>
+
+<form method="POST">
+
+<div class="mb-3">
+<label>Title</label>
+<input type="text"
+       name="title"
+       class="form-control"
+       value="{{ ticket.title }}"
+       required>
+</div>
+
+<div class="mb-3">
+<label>Description</label>
+<textarea name="description"
+          class="form-control"
+          rows="5"
+          required>{{ ticket.description }}</textarea>
+</div>
+
+<div class="mb-3">
+<label>Category</label>
+<select name="category" class="form-select">
+
+<option {% if ticket.category=="Hardware" %}selected{% endif %}>Hardware</option>
+<option {% if ticket.category=="Software" %}selected{% endif %}>Software</option>
+<option {% if ticket.category=="Network" %}selected{% endif %}>Network</option>
+<option {% if ticket.category=="Printer" %}selected{% endif %}>Printer</option>
+<option {% if ticket.category=="Email" %}selected{% endif %}>Email</option>
+<option {% if ticket.category=="VPN" %}selected{% endif %}>VPN</option>
+
+</select>
+</div>
+
+<div class="mb-3">
+<label>Priority</label>
+<select name="priority" class="form-select">
+
+<option {% if ticket.priority=="Low" %}selected{% endif %}>Low</option>
+<option {% if ticket.priority=="Medium" %}selected{% endif %}>Medium</option>
+<option {% if ticket.priority=="High" %}selected{% endif %}>High</option>
+<option {% if ticket.priority=="Critical" %}selected{% endif %}>Critical</option>
+
+</select>
+</div>
+
+<div class="mb-3">
+<label>Status</label>
+
+<select name="status" class="form-select">
+
+<option {% if ticket.status=="Open" %}selected{% endif %}>Open</option>
+<option {% if ticket.status=="Pending" %}selected{% endif %}>Pending</option>
+<option {% if ticket.status=="Closed" %}selected{% endif %}>Closed</option>
+
+</select>
+
+</div>
+
+<button class="btn btn-primary">
+Update Ticket
+</button>
+
+<a href="/tickets" class="btn btn-secondary">
+Cancel
+</a>
+
+</form>
+
+</div>
+
+{% endblock %}

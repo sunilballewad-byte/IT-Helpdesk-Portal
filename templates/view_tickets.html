@@ -1,3 +1,4 @@
+:::writing{variant="document" id="61542"}
 {% extends "base.html" %}
 
 {% block title %}View Tickets{% endblock %}
@@ -6,48 +7,44 @@
 
 <div class="container mt-5">
 
-<h2>Ticket List</h2>
+    <h2>Ticket List</h2>
 
-<hr>
+    <hr>
 
-<table class="table table-bordered table-striped">
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Ticket No</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
 
-<thead class="table-dark">
-
-<tr>
-
-<th>ID</th>
-<th>Ticket No</th>
-<th>Title</th>
-<th>Category</th>
-<th>Priority</th>
-<th>Status</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-{% for ticket in tickets %}
-
-<tr>
-
-<td>{{ ticket.id }}</td>
-<td>{{ ticket.ticket_number }}</td>
-<td>{{ ticket.title }}</td>
-<td>{{ ticket.category }}</td>
-<td>{{ ticket.priority }}</td>
-<td>{{ ticket.status }}</td>
-
-</tr>
-
-{% endfor %}
-
-</tbody>
-
-</table>
+        <tbody>
+            {% for ticket in tickets %}
+            <tr>
+                <td>{{ ticket.id }}</td>
+                <td>{{ ticket.ticket_number }}</td>
+                <td>{{ ticket.title }}</td>
+                <td>{{ ticket.category }}</td>
+                <td>{{ ticket.priority }}</td>
+                <td>{{ ticket.status }}</td>
+                <td>
+                    <a href="{{ url_for('tickets.edit_ticket', id=ticket.id) }}"
+                       class="btn btn-warning btn-sm">
+                        Edit
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
 </div>
 
 {% endblock %}
+:::
