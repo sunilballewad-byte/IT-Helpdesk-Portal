@@ -1,37 +1,50 @@
 {% extends "base.html" %}
 
+{% block title %}View Tickets{% endblock %}
+
 {% block content %}
 
 <div class="container mt-5">
 
-<h2>All Tickets</h2>
+<h2>Ticket List</h2>
 
 <hr>
 
-<table class="table table-bordered">
+<table class="table table-bordered table-striped">
+
+<thead class="table-dark">
 
 <tr>
-<th>Ticket</th>
+
+<th>ID</th>
+<th>Ticket No</th>
 <th>Title</th>
-<th>Status</th>
+<th>Category</th>
 <th>Priority</th>
+<th>Status</th>
+
 </tr>
+
+</thead>
+
+<tbody>
 
 {% for ticket in tickets %}
 
 <tr>
 
+<td>{{ ticket.id }}</td>
 <td>{{ ticket.ticket_number }}</td>
-
 <td>{{ ticket.title }}</td>
-
-<td>{{ ticket.status }}</td>
-
+<td>{{ ticket.category }}</td>
 <td>{{ ticket.priority }}</td>
+<td>{{ ticket.status }}</td>
 
 </tr>
 
 {% endfor %}
+
+</tbody>
 
 </table>
 

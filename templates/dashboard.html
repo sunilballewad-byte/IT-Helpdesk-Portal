@@ -6,41 +6,101 @@
 
 <div class="container mt-5">
 
-    <h2>Welcome to IT Helpdesk Portal</h2>
+    <h1 class="mb-4">Welcome to IT Helpdesk Portal</h1>
 
     <hr>
 
     <div class="row">
 
-        <div class="col-md-3">
-            <div class="card shadow p-3">
-                <h5>Total Tickets</h5>
-                <h2>0</h2>
+        <!-- Total Tickets -->
+        <div class="col-md-3 mb-3">
+            <div class="card shadow rounded">
+                <div class="card-body">
+                    <h4>Total Tickets</h4>
+                    <h2>{{ total }}</h2>
+                </div>
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="card shadow p-3">
-                <h5>Open</h5>
-                <h2>0</h2>
+        <!-- Open Tickets -->
+        <div class="col-md-3 mb-3">
+            <div class="card shadow rounded">
+                <div class="card-body">
+                    <h4>Open</h4>
+                    <h2>{{ open_count }}</h2>
+                </div>
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="card shadow p-3">
-                <h5>Closed</h5>
-                <h2>0</h2>
+        <!-- Closed Tickets -->
+        <div class="col-md-3 mb-3">
+            <div class="card shadow rounded">
+                <div class="card-body">
+                    <h4>Closed</h4>
+                    <h2>{{ closed_count }}</h2>
+                </div>
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="card shadow p-3">
-                <h5>Pending</h5>
-                <h2>0</h2>
+        <!-- Pending Tickets -->
+        <div class="col-md-3 mb-3">
+            <div class="card shadow rounded">
+                <div class="card-body">
+                    <h4>Pending</h4>
+                    <h2>{{ pending_count }}</h2>
+                </div>
             </div>
         </div>
 
     </div>
+
+    <hr class="mt-4 mb-4">
+
+    <h3>Recent Tickets</h3>
+
+    <table class="table table-bordered table-hover">
+
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Ticket No</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Priority</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+        {% if tickets %}
+
+            {% for ticket in tickets %}
+
+            <tr>
+                <td>{{ ticket.id }}</td>
+                <td>{{ ticket.ticket_number }}</td>
+                <td>{{ ticket.title }}</td>
+                <td>{{ ticket.category }}</td>
+                <td>{{ ticket.priority }}</td>
+                <td>{{ ticket.status }}</td>
+            </tr>
+
+            {% endfor %}
+
+        {% else %}
+
+            <tr>
+                <td colspan="6" class="text-center">
+                    No Tickets Found
+                </td>
+            </tr>
+
+        {% endif %}
+
+        </tbody>
+
+    </table>
 
 </div>
 
