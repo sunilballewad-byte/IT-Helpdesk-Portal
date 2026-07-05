@@ -3,50 +3,79 @@
 {% block title %}Create Ticket{% endblock %}
 
 {% block content %}
+
 <div class="container mt-5">
 
     <h2>Create New Ticket</h2>
+
     <hr>
 
-    <form>
+    <form method="POST">
 
         <div class="mb-3">
-            <label>Ticket Title</label>
-            <input type="text" class="form-control">
+            <label class="form-label">Ticket Title</label>
+            <input
+                type="text"
+                name="title"
+                class="form-control"
+                placeholder="Enter Ticket Title"
+                required>
         </div>
 
         <div class="mb-3">
-            <label>Description</label>
-            <textarea class="form-control" rows="5"></textarea>
+            <label class="form-label">Description</label>
+
+            <textarea
+                name="description"
+                rows="5"
+                class="form-control"
+                placeholder="Describe your issue"
+                required></textarea>
         </div>
 
         <div class="mb-3">
-            <label>Category</label>
-            <select class="form-control">
+            <label class="form-label">Category</label>
+
+            <select
+                name="category"
+                class="form-select">
+
                 <option>Hardware</option>
                 <option>Software</option>
                 <option>Network</option>
                 <option>Printer</option>
                 <option>Email</option>
                 <option>VPN</option>
+
             </select>
         </div>
 
         <div class="mb-3">
-            <label>Priority</label>
-            <select class="form-control">
+
+            <label class="form-label">Priority</label>
+
+            <select
+                name="priority"
+                class="form-select">
+
                 <option>Low</option>
                 <option>Medium</option>
                 <option>High</option>
                 <option>Critical</option>
+
             </select>
+
         </div>
 
-        <button class="btn btn-success">
+        <button
+            class="btn btn-success">
+
             Create Ticket
+
         </button>
 
     </form>
 
 </div>
+
 {% endblock %}
