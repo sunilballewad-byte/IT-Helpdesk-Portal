@@ -13,7 +13,7 @@ def login():
     email = request.form.get("email")
     password = request.form.get("password")
 
-    print("Email :", email)
-    print("Password :", password)
+    print("Email:", email)
+    print("Password:", password)
 
-    return redirect(url_for("dashboard"))
+    return redirect(url_for("dashboard.dashboard_home"))
