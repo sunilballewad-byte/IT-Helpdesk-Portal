@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from sqlalchemy import or_
+from flask_login import login_required
 from models import db, Ticket
 import random
 
@@ -7,19 +8,22 @@ tickets = Blueprint("tickets", __name__)
 
 
 @tickets.route("/tickets")
+@login_required
 def view_tickets():
     search = request.args.get("search", "").strip()
 
+    query = Ticket.query
+
     if search:
-        ticket_list = Ticket.query.filter(
+        query = query.filter(
             or_(
-                Ticket.title.contains(search),
-                Ticket.ticket_number.contains(search),
-                Ticket.category.contains(search)
+                Ticket.title.ilike(f"%{search}%"),
+                Ticket.ticket_number.ilike(f"%{search}%"),
+                Ticket.category.ilike(f"%{search}%")
             )
-        ).order_by(Ticket.id.desc()).all()
-    else:
-        ticket_list = Ticket.query.order_by(Ticket.id.desc()).all()
+        )
+
+    ticket_list = query.order_by(Ticket.id.desc()).all()
 
     return render_template(
         "view_tickets.html",
@@ -29,6 +33,7 @@ def view_tickets():
 
 
 @tickets.route("/tickets/create", methods=["GET", "POST"])
+@login_required
 def create_ticket():
     if request.method == "POST":
         ticket = Ticket(
@@ -50,8 +55,12 @@ def create_ticket():
 
 
 @tickets.route("/tickets/edit/<int:id>", methods=["GET", "POST"])
+@login_required
 def edit_ticket(id):
-    ticket = Ticket.query.get_or_404(id)
+    ticket = db.session.get(Ticket, id)
+
+    if ticket is None:
+        return "Ticket not found", 404
 
     if request.method == "POST":
         ticket.title = request.form["title"]
@@ -64,15 +73,16 @@ def edit_ticket(id):
 
         return redirect(url_for("tickets.view_tickets"))
 
-    return render_template(
-        "edit_ticket.html",
-        ticket=ticket
-    )
+    return render_template("edit_ticket.html", ticket=ticket)
 
 
-@tickets.route("/tickets/delete/<int:id>", methods=["GET", "POST"])
+@tickets.route("/tickets/delete/<int:id>", methods=["POST"])
+@login_required
 def delete_ticket(id):
-    ticket = Ticket.query.get_or_404(id)
+    ticket = db.session.get(Ticket, id)
+
+    if ticket is None:
+        return "Ticket not found", 404
 
     db.session.delete(ticket)
     db.session.commit()

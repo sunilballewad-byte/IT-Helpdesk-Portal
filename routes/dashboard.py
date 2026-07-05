@@ -1,11 +1,12 @@
 from flask import Blueprint, render_template
 from models import Ticket
+from flask_login import login_required
 
 dashboard = Blueprint("dashboard", __name__)
 
 @dashboard.route("/dashboard")
+@login_required
 def dashboard_home():
-
     total = Ticket.query.count()
     open_count = Ticket.query.filter_by(status="Open").count()
     closed_count = Ticket.query.filter_by(status="Closed").count()
