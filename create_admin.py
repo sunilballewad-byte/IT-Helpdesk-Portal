@@ -1,30 +1,21 @@
 from app import app
 from models import db, User
-from flask_bcrypt import Bcrypt
-
-bcrypt = Bcrypt(app)
+from werkzeug.security import generate_password_hash
 
 with app.app_context():
 
-    admin = User.query.filter_by(email="admin@helpdesk.com").first()
+    User.query.delete()
+    db.session.commit()
 
-    if not admin:
+    admin = User(
+        employee_id="EMP001",
+        name="Administrator",
+        email="admin@helpdesk.com",
+        password=generate_password_hash("Admin@123"),
+        role="Admin"
+    )
 
-        password = bcrypt.generate_password_hash("Admin@123").decode("utf-8")
+    db.session.add(admin)
+    db.session.commit()
 
-        admin = User(
-            employee_id="EMP001",
-            name="Administrator",
-            email="admin@helpdesk.com",
-            password=password,
-            role="Admin"
-        )
-
-        db.session.add(admin)
-        db.session.commit()
-
-        print("Admin User Created Successfully")
-
-    else:
-
-        print("Admin Already Exists")
+    print("Admin User Created Successfully")

@@ -12,7 +12,13 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
-    role = db.Column(db.String(20), nullable=False)
+
+    role = db.Column(db.String(20), nullable=False, default="Employee")
+
+    department = db.Column(db.String(100))
+    mobile = db.Column(db.String(20))
+
+    is_active = db.Column(db.Boolean, default=True)
 
     def __repr__(self):
         return f"<User {self.email}>"
@@ -25,11 +31,15 @@ class Ticket(db.Model):
     ticket_number = db.Column(db.String(20), unique=True, nullable=False)
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=False)
+
     category = db.Column(db.String(50), nullable=False)
     priority = db.Column(db.String(20), nullable=False)
-    status = db.Column(db.String(20), nullable=False, default="Open")
+
+    status = db.Column(db.String(20), default="Open")
+
     created_by = db.Column(db.String(100))
     assigned_to = db.Column(db.String(100))
+
     created_at = db.Column(
         db.DateTime,
         default=db.func.current_timestamp()
