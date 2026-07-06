@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Asset{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h2>Edit Asset</h2>
+    <hr>
+
+    <form method="POST">
+
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Asset ID</label>
+                <input type="text" name="asset_id" class="form-control"
+                       value="{{ asset.asset_id }}" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Asset Name</label>
+                <input type="text" name="asset_name" class="form-control"
+                       value="{{ asset.asset_name }}" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Asset Type</label>
+
+                <select name="asset_type" class="form-select">
+
+                    <option value="Laptop" {% if asset.asset_type=="Laptop" %}selected{% endif %}>Laptop</option>
+
+                    <option value="Desktop" {% if asset.asset_type=="Desktop" %}selected{% endif %}>Desktop</option>
+
+                    <option value="Printer" {% if asset.asset_type=="Printer" %}selected{% endif %}>Printer</option>
+
+                    <option value="Monitor" {% if asset.asset_type=="Monitor" %}selected{% endif %}>Monitor</option>
+
+                    <option value="Firewall" {% if asset.asset_type=="Firewall" %}selected{% endif %}>Firewall</option>
+
+                    <option value="Switch" {% if asset.asset_type=="Switch" %}selected{% endif %}>Switch</option>
+
+                    <option value="Access Point" {% if asset.asset_type=="Access Point" %}selected{% endif %}>Access Point</option>
+
+                </select>
+
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Brand</label>
+                <input type="text" name="brand" class="form-control"
+                       value="{{ asset.brand }}">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Model</label>
+                <input type="text" name="model" class="form-control"
+                       value="{{ asset.model }}">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Serial Number</label>
+                <input type="text" name="serial_number" class="form-control"
+                       value="{{ asset.serial_number }}">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Assigned To</label>
+                <input type="text" name="assigned_to" class="form-control"
+                       value="{{ asset.assigned_to }}">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Department</label>
+                <input type="text" name="department" class="form-control"
+                       value="{{ asset.department }}">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Purchase Date</label>
+                <input type="date" name="purchase_date" class="form-control"
+                       value="{{ asset.purchase_date }}">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Warranty End</label>
+                <input type="date" name="warranty_end" class="form-control"
+                       value="{{ asset.warranty_end }}">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Status</label>
+
+                <select name="status" class="form-select">
+
+                    <option value="Available" {% if asset.status=="Available" %}selected{% endif %}>Available</option>
+
+                    <option value="Assigned" {% if asset.status=="Assigned" %}selected{% endif %}>Assigned</option>
+
+                    <option value="Repair" {% if asset.status=="Repair" %}selected{% endif %}>Repair</option>
+
+                    <option value="Scrapped" {% if asset.status=="Scrapped" %}selected{% endif %}>Scrapped</option>
+
+                </select>
+
+            </div>
+
+            <div class="col-12 mb-3">
+                <label class="form-label">Remarks</label>
+
+                <textarea name="remarks"
+                          class="form-control"
+                          rows="4">{{ asset.remarks }}</textarea>
+
+            </div>
+
+        </div>
+
+        <button class="btn btn-primary">
+            Update Asset
+        </button>
+
+        <a href="{{ url_for('assets.view_assets') }}"
+           class="btn btn-secondary">
+            Cancel
+        </a>
+
+    </form>
+
+</div>
+
+{% endblock %}
