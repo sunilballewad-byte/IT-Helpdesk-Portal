@@ -1,18 +1,32 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import login_required
+from sqlalchemy import or_
+
 from models import db, Asset
 
 assets = Blueprint("assets", __name__)
 
 
 # ==========================
-# View Assets
+# View Assets (with Search)
 # ==========================
 @assets.route("/assets")
 @login_required
 def view_assets():
 
-    asset_list = Asset.query.all()
+    search = request.args.get("search", "").strip()
+
+    if search:
+        asset_list = Asset.query.filter(
+            or_(
+                Asset.asset_id.contains(search),
+                Asset.asset_name.contains(search),
+                Asset.brand.contains(search),
+                Asset.assigned_to.contains(search)
+            )
+        ).all()
+    else:
+        asset_list = Asset.query.all()
 
     return render_template(
         "view_assets.html",

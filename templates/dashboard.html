@@ -10,51 +10,89 @@
 
     <hr>
 
+    <!-- Ticket Cards -->
     <div class="row">
 
-        <!-- Total Tickets -->
         <div class="col-md-3 mb-3">
-            <div class="card shadow rounded">
+            <div class="card shadow">
                 <div class="card-body">
-                    <h4>Total Tickets</h4>
-                    <h2>{{ total }}</h2>
+                    <h5>Total Tickets</h5>
+                    <h2>{{ total_tickets }}</h2>
                 </div>
             </div>
         </div>
 
-        <!-- Open Tickets -->
         <div class="col-md-3 mb-3">
-            <div class="card shadow rounded">
+            <div class="card shadow">
                 <div class="card-body">
-                    <h4>Open</h4>
-                    <h2>{{ open_count }}</h2>
+                    <h5>Open Tickets</h5>
+                    <h2>{{ open_tickets }}</h2>
                 </div>
             </div>
         </div>
 
-        <!-- Closed Tickets -->
         <div class="col-md-3 mb-3">
-            <div class="card shadow rounded">
+            <div class="card shadow">
                 <div class="card-body">
-                    <h4>Closed</h4>
-                    <h2>{{ closed_count }}</h2>
+                    <h5>Closed Tickets</h5>
+                    <h2>{{ closed_tickets }}</h2>
                 </div>
             </div>
         </div>
 
-        <!-- Pending Tickets -->
         <div class="col-md-3 mb-3">
-            <div class="card shadow rounded">
+            <div class="card shadow">
                 <div class="card-body">
-                    <h4>Pending</h4>
-                    <h2>{{ pending_count }}</h2>
+                    <h5>Pending Tickets</h5>
+                    <h2>{{ pending_tickets }}</h2>
                 </div>
             </div>
         </div>
 
     </div>
 
-    <hr class="mt-4 mb-4">
+    <!-- Asset Cards -->
+    <div class="row mt-2">
+
+        <div class="col-md-3 mb-3">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5>Total Assets</h5>
+                    <h2>{{ total_assets }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5>Assigned Assets</h5>
+                    <h2>{{ assigned_assets }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5>Available Assets</h5>
+                    <h2>{{ available_assets }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5>Repair Assets</h5>
+                    <h2>{{ repair_assets }}</h2>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <hr class="mt-4">
 
     <h3>Recent Tickets</h3>
 
@@ -73,17 +111,28 @@
 
         <tbody>
 
-        {% if tickets %}
+        {% if recent_tickets %}
 
-            {% for ticket in tickets %}
+            {% for ticket in recent_tickets %}
 
             <tr>
+
                 <td>{{ ticket.id }}</td>
                 <td>{{ ticket.ticket_number }}</td>
                 <td>{{ ticket.title }}</td>
                 <td>{{ ticket.category }}</td>
                 <td>{{ ticket.priority }}</td>
-                <td>{{ ticket.status }}</td>
+
+                <td>
+                    {% if ticket.status == "Open" %}
+                        <span class="badge bg-success">{{ ticket.status }}</span>
+                    {% elif ticket.status == "Pending" %}
+                        <span class="badge bg-warning text-dark">{{ ticket.status }}</span>
+                    {% else %}
+                        <span class="badge bg-secondary">{{ ticket.status }}</span>
+                    {% endif %}
+                </td>
+
             </tr>
 
             {% endfor %}
@@ -92,7 +141,7 @@
 
             <tr>
                 <td colspan="6" class="text-center">
-                    No Tickets Found
+                    No Recent Tickets
                 </td>
             </tr>
 

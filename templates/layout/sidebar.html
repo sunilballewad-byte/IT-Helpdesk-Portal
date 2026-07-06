@@ -1,95 +1,43 @@
-<div class="bg-dark text-white p-3"
-     style="width:250px; min-height:100vh;">
+<div class="sidebar">
 
-    <h3 class="text-center mb-4">
-
+    <h2 class="logo">
         IT Helpdesk
-
-    </h3>
+    </h2>
 
     <hr>
 
-    <ul class="nav flex-column">
+    <a href="{{ url_for('dashboard.dashboard_home') }}">
+        🏠 Dashboard
+    </a>
 
-        <li class="nav-item mb-2">
+    <a href="{{ url_for('tickets.create_ticket') }}">
+        ➕ Create Ticket
+    </a>
 
-            <a href="/dashboard"
-               class="nav-link text-white">
+    <a href="{{ url_for('tickets.view_tickets') }}">
+        🎫 View Tickets
+    </a>
 
-                🏠 Dashboard
+    <a href="{{ url_for('assets.view_assets') }}">
+        💻 Assets
+    </a>
 
-            </a>
+    <a href="{{ url_for('users.view_users') }}">
+        👤 Users
+    </a>
 
-        </li>
+    <a href="#">
+        📊 Reports
+    </a>
 
-        <li class="nav-item mb-2">
+    <a href="#">
+        ⚙️ Settings
+    </a>
 
-            <a href="/tickets/create"
-               class="nav-link text-white">
+    <hr>
 
-                ➕ Create Ticket
-
-            </a>
-
-        </li>
-
-        <li class="nav-item mb-2">
-
-            <a href="/tickets"
-               class="nav-link text-white">
-
-                🎫 View Tickets
-
-            </a>
-
-        </li>
-
-        <li class="nav-item mb-2">
-
-            <a href="#"
-               class="nav-link text-white">
-
-                💻 Assets
-
-            </a>
-
-        </li>
-
-        <li class="nav-item mb-2">
-
-            <a href="#"
-               class="nav-link text-white">
-
-                📊 Reports
-
-            </a>
-
-        </li>
-
-        <li class="nav-item mb-2">
-
-            <a href="#"
-               class="nav-link text-white">
-
-                ⚙ Settings
-
-            </a>
-
-        </li>
-
-        <hr>
-
-        <li class="nav-item">
-
-            <a href="/"
-               class="nav-link text-danger">
-
-                🚪 Logout
-
-            </a>
-
-        </li>
-
-    </ul>
+    <a href="{{ url_for('auth.logout') }}" class="logout">
+        🚪 Logout
+    </a>
 
 </div>

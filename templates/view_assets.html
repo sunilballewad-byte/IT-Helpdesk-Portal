@@ -9,14 +9,32 @@
     <h2>Asset List</h2>
     <hr>
 
-    <div class="mb-3">
+    <div class="d-flex justify-content-between mb-3">
         <a href="{{ url_for('assets.create_asset') }}" class="btn btn-primary">
             + Add New Asset
         </a>
     </div>
 
-    <table class="table table-bordered table-hover">
+    <!-- Search Form -->
+    <form method="GET" action="{{ url_for('assets.view_assets') }}" class="mb-3">
+        <div class="input-group">
+            <input
+                type="text"
+                name="search"
+                class="form-control"
+                placeholder="Search by Asset ID, Name, Brand or Assigned To"
+                value="{{ request.args.get('search', '') }}"
+            >
+            <button class="btn btn-success" type="submit">
+                Search
+            </button>
+            <a href="{{ url_for('assets.view_assets') }}" class="btn btn-secondary">
+                Reset
+            </a>
+        </div>
+    </form>
 
+    <table class="table table-bordered table-hover">
         <thead class="table-dark">
             <tr>
                 <th>ID</th>
@@ -31,23 +49,17 @@
         </thead>
 
         <tbody>
-
             {% if assets %}
-
                 {% for asset in assets %}
-
                 <tr>
-
                     <td>{{ asset.id }}</td>
                     <td>{{ asset.asset_id }}</td>
                     <td>{{ asset.asset_name }}</td>
                     <td>{{ asset.asset_type }}</td>
                     <td>{{ asset.brand }}</td>
-                    <td>{{ asset.assigned_to }}</td>
+                    <td>{{ asset.assigned_to or '-' }}</td>
                     <td>{{ asset.status }}</td>
-
                     <td>
-
                         <a href="{{ url_for('assets.edit_asset', id=asset.id) }}"
                            class="btn btn-warning btn-sm">
                             ✏️ Edit
@@ -58,25 +70,17 @@
                            onclick="return confirm('Are you sure you want to delete this asset?');">
                             🗑 Delete
                         </a>
-
                     </td>
-
                 </tr>
-
                 {% endfor %}
-
             {% else %}
-
                 <tr>
                     <td colspan="8" class="text-center">
                         No Assets Found
                     </td>
                 </tr>
-
             {% endif %}
-
         </tbody>
-
     </table>
 
 </div>

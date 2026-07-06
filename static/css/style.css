@@ -1,22 +1,78 @@
 body{
-
+    margin:0;
+    padding:0;
     background:#f4f6f9;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+/* Sidebar */
+
+.sidebar{
+
+    width:260px;
+    min-height:100vh;
+
+    background:#212529;
+
+    color:white;
+
+    padding:20px;
 
 }
 
-.nav-link{
+.logo{
 
-    font-size:16px;
+    color:white;
+
+    font-size:22px;
+
+    font-weight:bold;
+
+    margin-bottom:20px;
 
 }
 
-.nav-link:hover{
+.sidebar a{
+
+    display:block;
+
+    color:white;
+
+    text-decoration:none;
+
+    padding:14px 16px;
+
+    margin-bottom:8px;
+
+    border-radius:8px;
+
+    transition:0.3s;
+
+}
+
+.sidebar a:hover{
 
     background:#0d6efd;
 
-    border-radius:5px;
+    color:white;
 
 }
+
+.logout{
+
+    color:#ff6b6b !important;
+
+}
+
+/* Navbar */
+
+.navbar{
+
+    background:white;
+
+}
+
+/* Cards */
 
 .card{
 
@@ -26,14 +82,22 @@ body{
 
 }
 
+/* Table */
+
 table{
 
     background:white;
 
 }
 
+/* Responsive */
+
+@media(max-width:768px){
+
 .sidebar{
 
-    min-height:100vh;
+    width:220px;
+
+}
 
 }

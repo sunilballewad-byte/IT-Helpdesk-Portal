@@ -9,6 +9,7 @@ from routes.dashboard import dashboard
 from routes.tickets import tickets
 from routes.admin import admin
 from routes.assets import assets
+from routes.users import users
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -31,6 +32,7 @@ app.register_blueprint(dashboard)
 app.register_blueprint(tickets)
 app.register_blueprint(admin)
 app.register_blueprint(assets)
+app.register_blueprint(users)
 
 
 with app.app_context():
