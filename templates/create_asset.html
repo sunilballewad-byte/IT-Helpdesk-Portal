@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Create Asset{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h2>Create New Asset</h2>
+    <hr>
+
+    <form method="POST">
+
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Asset ID</label>
+                <input type="text" name="asset_id" class="form-control" placeholder="AST001" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Asset Name</label>
+                <input type="text" name="asset_name" class="form-control" placeholder="Dell Latitude 5450" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Asset Type</label>
+                <select name="asset_type" class="form-select">
+                    <option>Laptop</option>
+                    <option>Desktop</option>
+                    <option>Printer</option>
+                    <option>Monitor</option>
+                    <option>Firewall</option>
+                    <option>Switch</option>
+                    <option>Access Point</option>
+                </select>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Brand</label>
+                <input type="text" name="brand" class="form-control">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Model</label>
+                <input type="text" name="model" class="form-control">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Serial Number</label>
+                <input type="text" name="serial_number" class="form-control">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Assigned To</label>
+                <input type="text" name="assigned_to" class="form-control">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Department</label>
+                <input type="text" name="department" class="form-control">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Purchase Date</label>
+                <input type="date" name="purchase_date" class="form-control">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Warranty End</label>
+                <input type="date" name="warranty_end" class="form-control">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Status</label>
+                <select name="status" class="form-select">
+                    <option>Available</option>
+                    <option>Assigned</option>
+                    <option>Repair</option>
+                    <option>Scrapped</option>
+                </select>
+            </div>
+
+            <div class="col-12 mb-3">
+                <label class="form-label">Remarks</label>
+                <textarea name="remarks" class="form-control" rows="4"></textarea>
+            </div>
+
+        </div>
+
+        <button class="btn btn-success">
+            Save Asset
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}
