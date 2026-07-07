@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h2>Reports Dashboard</h2>
+    <hr>
+
+    <!-- Export Button -->
+    <div class="mb-3">
+        <a href="{{ url_for('reports.export_ticket_excel') }}"
+           class="btn btn-success">
+            📊 Export Tickets to Excel
+        </a>
+    </div>
+
+    <!-- First Row -->
+    <div class="row">
+
+        <div class="col-md-4 mb-3">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5>Total Tickets</h5>
+                    <h2>{{ total_tickets }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5>Open Tickets</h5>
+                    <h2>{{ open_tickets }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5>Closed Tickets</h5>
+                    <h2>{{ closed_tickets }}</h2>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Second Row -->
+    <div class="row">
+
+        <div class="col-md-4 mb-3">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5>Pending Tickets</h5>
+                    <h2>{{ pending_tickets }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5>Total Assets</h5>
+                    <h2>{{ total_assets }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5>Total Users</h5>
+                    <h2>{{ total_users }}</h2>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

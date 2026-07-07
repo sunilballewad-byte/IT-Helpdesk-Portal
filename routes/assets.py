@@ -1,32 +1,22 @@
-from flask import Blueprint, render_template, request, redirect, url_for
-from flask_login import login_required
-from sqlalchemy import or_
-
+from flask import Blueprint, render_template, request, redirect, url_for, abort
+from flask_login import login_required, current_user
 from models import db, Asset
 
 assets = Blueprint("assets", __name__)
 
 
 # ==========================
-# View Assets (with Search)
+# View Assets
 # ==========================
 @assets.route("/assets")
 @login_required
 def view_assets():
 
-    search = request.args.get("search", "").strip()
+    # Admin Only
+    if current_user.role != "Admin":
+        abort(403)
 
-    if search:
-        asset_list = Asset.query.filter(
-            or_(
-                Asset.asset_id.contains(search),
-                Asset.asset_name.contains(search),
-                Asset.brand.contains(search),
-                Asset.assigned_to.contains(search)
-            )
-        ).all()
-    else:
-        asset_list = Asset.query.all()
+    asset_list = Asset.query.all()
 
     return render_template(
         "view_assets.html",
@@ -40,6 +30,10 @@ def view_assets():
 @assets.route("/assets/create", methods=["GET", "POST"])
 @login_required
 def create_asset():
+
+    # Admin Only
+    if current_user.role != "Admin":
+        abort(403)
 
     if request.method == "POST":
 
@@ -72,6 +66,10 @@ def create_asset():
 @assets.route("/assets/edit/<int:id>", methods=["GET", "POST"])
 @login_required
 def edit_asset(id):
+
+    # Admin Only
+    if current_user.role != "Admin":
+        abort(403)
 
     asset = Asset.query.get_or_404(id)
 
@@ -106,6 +104,10 @@ def edit_asset(id):
 @assets.route("/assets/delete/<int:id>")
 @login_required
 def delete_asset(id):
+
+    # Admin Only
+    if current_user.role != "Admin":
+        abort(403)
 
     asset = Asset.query.get_or_404(id)
 

@@ -6,10 +6,12 @@
 
     <hr>
 
+    <!-- Dashboard -->
     <a href="{{ url_for('dashboard.dashboard_home') }}">
         🏠 Dashboard
     </a>
 
+    <!-- Tickets -->
     <a href="{{ url_for('tickets.create_ticket') }}">
         ➕ Create Ticket
     </a>
@@ -17,6 +19,9 @@
     <a href="{{ url_for('tickets.view_tickets') }}">
         🎫 View Tickets
     </a>
+
+    <!-- Admin Menu -->
+    {% if current_user.role == "Admin" %}
 
     <a href="{{ url_for('assets.view_assets') }}">
         💻 Assets
@@ -26,7 +31,7 @@
         👤 Users
     </a>
 
-    <a href="#">
+    <a href="{{ url_for('reports.reports_dashboard') }}">
         📊 Reports
     </a>
 
@@ -34,8 +39,11 @@
         ⚙️ Settings
     </a>
 
+    {% endif %}
+
     <hr>
 
+    <!-- Logout -->
     <a href="{{ url_for('auth.logout') }}" class="logout">
         🚪 Logout
     </a>

@@ -10,11 +10,11 @@
 
     <hr>
 
-    <!-- Ticket Cards -->
+    <!-- Ticket Summary -->
     <div class="row">
 
         <div class="col-md-3 mb-3">
-            <div class="card shadow">
+            <div class="card shadow text-center">
                 <div class="card-body">
                     <h5>Total Tickets</h5>
                     <h2>{{ total_tickets }}</h2>
@@ -23,7 +23,7 @@
         </div>
 
         <div class="col-md-3 mb-3">
-            <div class="card shadow">
+            <div class="card shadow text-center">
                 <div class="card-body">
                     <h5>Open Tickets</h5>
                     <h2>{{ open_tickets }}</h2>
@@ -32,7 +32,7 @@
         </div>
 
         <div class="col-md-3 mb-3">
-            <div class="card shadow">
+            <div class="card shadow text-center">
                 <div class="card-body">
                     <h5>Closed Tickets</h5>
                     <h2>{{ closed_tickets }}</h2>
@@ -41,7 +41,7 @@
         </div>
 
         <div class="col-md-3 mb-3">
-            <div class="card shadow">
+            <div class="card shadow text-center">
                 <div class="card-body">
                     <h5>Pending Tickets</h5>
                     <h2>{{ pending_tickets }}</h2>
@@ -51,11 +51,11 @@
 
     </div>
 
-    <!-- Asset Cards -->
-    <div class="row mt-2">
+    <!-- Asset Summary -->
+    <div class="row mt-3">
 
         <div class="col-md-3 mb-3">
-            <div class="card shadow">
+            <div class="card shadow text-center">
                 <div class="card-body">
                     <h5>Total Assets</h5>
                     <h2>{{ total_assets }}</h2>
@@ -64,7 +64,7 @@
         </div>
 
         <div class="col-md-3 mb-3">
-            <div class="card shadow">
+            <div class="card shadow text-center">
                 <div class="card-body">
                     <h5>Assigned Assets</h5>
                     <h2>{{ assigned_assets }}</h2>
@@ -73,7 +73,7 @@
         </div>
 
         <div class="col-md-3 mb-3">
-            <div class="card shadow">
+            <div class="card shadow text-center">
                 <div class="card-body">
                     <h5>Available Assets</h5>
                     <h2>{{ available_assets }}</h2>
@@ -82,7 +82,7 @@
         </div>
 
         <div class="col-md-3 mb-3">
-            <div class="card shadow">
+            <div class="card shadow text-center">
                 <div class="card-body">
                     <h5>Repair Assets</h5>
                     <h2>{{ repair_assets }}</h2>
@@ -92,9 +92,38 @@
 
     </div>
 
-    <hr class="mt-4">
+    <!-- Charts -->
+    <hr class="my-4">
 
-    <h3>Recent Tickets</h3>
+    <div class="row">
+
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header fw-bold">
+                    📊 Ticket Status
+                </div>
+                <div class="card-body">
+                    <canvas id="ticketChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header fw-bold">
+                    💻 Asset Status
+                </div>
+                <div class="card-body">
+                    <canvas id="assetChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Recent Tickets -->
+    <h3 class="mt-4">Recent Tickets</h3>
+    <hr>
 
     <table class="table table-bordered table-hover">
 
@@ -114,7 +143,6 @@
         {% if recent_tickets %}
 
             {% for ticket in recent_tickets %}
-
             <tr>
 
                 <td>{{ ticket.id }}</td>
@@ -126,22 +154,26 @@
                 <td>
                     {% if ticket.status == "Open" %}
                         <span class="badge bg-success">{{ ticket.status }}</span>
+
                     {% elif ticket.status == "Pending" %}
                         <span class="badge bg-warning text-dark">{{ ticket.status }}</span>
-                    {% else %}
+
+                    {% elif ticket.status == "Closed" %}
                         <span class="badge bg-secondary">{{ ticket.status }}</span>
+
+                    {% else %}
+                        <span class="badge bg-info">{{ ticket.status }}</span>
                     {% endif %}
                 </td>
 
             </tr>
-
             {% endfor %}
 
         {% else %}
 
             <tr>
                 <td colspan="6" class="text-center">
-                    No Recent Tickets
+                    No Recent Tickets Found
                 </td>
             </tr>
 
@@ -152,5 +184,68 @@
     </table>
 
 </div>
+
+{% endblock %}
+
+{% block scripts %}
+
+/chart.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const ticketCtx = document.getElementById("ticketChart");
+
+    new Chart(ticketCtx, {
+        type: "pie",
+        data: {
+            labels: ["Open", "Closed", "Pending"],
+            datasets: [{
+                data: [
+                    {{ open_tickets }},
+                    {{ closed_tickets }},
+                    {{ pending_tickets }}
+                ],
+                backgroundColor: [
+                    "#198754",
+                    "#6c757d",
+                    "#ffc107"
+                ]
+            }]
+        }
+    });
+
+    const assetCtx = document.getElementById("assetChart");
+
+    new Chart(assetCtx, {
+        type: "bar",
+        data: {
+            labels: ["Available", "Assigned", "Repair"],
+            datasets: [{
+                label: "Assets",
+                data: [
+                    {{ available_assets }},
+                    {{ assigned_assets }},
+                    {{ repair_assets }}
+                ],
+                backgroundColor: [
+                    "#0d6efd",
+                    "#198754",
+                    "#dc3545"
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+});
+</script>
 
 {% endblock %}

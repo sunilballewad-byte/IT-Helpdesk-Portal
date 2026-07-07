@@ -44,6 +44,9 @@ class Ticket(db.Model):
     created_by = db.Column(db.String(100))
     assigned_to = db.Column(db.String(100))
 
+    # File attachment
+    attachment = db.Column(db.String(255))
+
     created_at = db.Column(
         db.DateTime,
         default=db.func.current_timestamp()
