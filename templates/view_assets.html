@@ -3,10 +3,8 @@
 {% block title %}Asset Management{% endblock %}
 
 {% block content %}
-
 <div class="container-fluid mt-4">
 
-    <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="fw-bold mb-0">Asset Management</h2>
@@ -14,49 +12,64 @@
                 View, manage, assign, and track IT assets
             </small>
         </div>
-
-        {{ url_for('assets.create_asset') }}
+        <a href="{{ url_for('assets.create_asset') }}" class="btn btn-primary">
+            Add New Asset
+        </a>
     </div>
 
-    <!-- Search Bar -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-
-             url_for('assets.view_assets') }}">
-
-                <div class="input-group">
-
-                    <input
-                        type="text"
-                        name="search"
-                        class="form-control"
-                        placeholder="Search by Asset ID, Asset Name, Brand or Assigned User"
-                        value="{{ request.args.get('search', '') }}"
-                    >
-
-                    <button class="btn btn-success" type="submit">
-                        Search
-                    </button>
-
-                    {{ url_for('assets.view_assets') }}">
-                        Reset
-                    </a>
-
-                </div>
-
-            </form>
-
+    <form method="GET" action="{{ url_for('assets.view_assets') }}" class="row g-3 mb-4">
+        <div class="col-md-4">
+            <input
+                type="text"
+                name="search"
+                value="{{ search }}"
+                class="form-control"
+                placeholder="Search Asset ID, Name, Brand, Model...">
         </div>
-    </div>
 
-    <!-- Asset Table -->
+        <div class="col-md-2">
+            <select name="status" class="form-select">
+                <option value="">All Statuses</option>
+                <option value="Available" {% if status == "Available" %}selected{% endif %}>Available</option>
+                <option value="Assigned" {% if status == "Assigned" %}selected{% endif %}>Assigned</option>
+                <option value="Repair" {% if status == "Repair" %}selected{% endif %}>Repair</option>
+                <option value="Scrapped" {% if status == "Scrapped" %}selected{% endif %}>Scrapped</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <select name="asset_type" class="form-select">
+                <option value="">All Types</option>
+                <option value="Laptop" {% if asset_type == "Laptop" %}selected{% endif %}>Laptop</option>
+                <option value="Desktop" {% if asset_type == "Desktop" %}selected{% endif %}>Desktop</option>
+                <option value="Printer" {% if asset_type == "Printer" %}selected{% endif %}>Printer</option>
+                <option value="Monitor" {% if asset_type == "Monitor" %}selected{% endif %}>Monitor</option>
+                <option value="Firewall" {% if asset_type == "Firewall" %}selected{% endif %}>Firewall</option>
+                <option value="Switch" {% if asset_type == "Switch" %}selected{% endif %}>Switch</option>
+                <option value="Access Point" {% if asset_type == "Access Point" %}selected{% endif %}>Access Point</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100" type="submit">
+                🔍 Search
+            </button>
+        </div>
+
+        <div class="col-md-2">
+            <a href="{{ url_for('assets.view_assets') }}" class="btn btn-secondary w-100">
+                Reset
+            </a>
+        </div>
+    </form>
+
+    <hr>
+
     <div class="card shadow-sm">
         <div class="card-body">
-
+            
             <div class="table-responsive">
-
-                <table class="table table-hover table-bordered align-middle">
-
+                <table class="table table-hover table-bordered align-middle mb-0">
                     <thead class="table-dark">
                         <tr>
                             <th>ID</th>
@@ -66,34 +79,86 @@
                             <th>Brand</th>
                             <th>Assigned To</th>
                             <th>Status</th>
-                            <th width="250">Actions</th>
+                            <th width="150">Actions</th>
                         </tr>
                     </thead>
-
                     <tbody>
-
-                    {% if assets %}
-
-                        {% for asset in assets %}
-
+                    {% if assets.items %}
+                        {% for asset in assets.items %}
                         <tr>
-
                             <td>{{ asset.id }}</td>
-
-                            <td>
-                                <strong>{{ asset.asset_id }}</strong>
-                            </td>
-
+                            <td><strong>{{ asset.asset_id }}</strong></td>
                             <td>{{ asset.asset_name }}</td>
-
                             <td>{{ asset.asset_type }}</td>
-
                             <td>{{ asset.brand }}</td>
-
+                            <td>{{ asset.assigned_to if asset.assigned_to else '-' }}</td>
                             <td>
-                                {{ asset.assigned_to if asset.assigned_to else '-' }}
+                                {% if asset.status == "Available" %}
+                                    <span class="badge bg-success">Available</span>
+                                {% elif asset.status == "Assigned" %}
+                                    <span class="badge bg-primary">Assigned</span>
+                                {% elif asset.status == "Repair" %}
+                                    <span class="badge bg-warning text-dark">Repair</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Scrapped</span>
+                                {% endif %}
                             </td>
-
                             <td>
+                                <a href="#" class="btn btn-sm btn-outline-primary">View</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-3">
+                                No matching assets found.
+                            </td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div> <nav class="mt-4">
+                <ul class="pagination justify-content-center mb-0">
 
-                                {% if asset.status == "Assigned
+                    {% if assets.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('assets.view_assets', page=assets.prev_num, search=search, status=status, asset_type=asset_type) }}">
+                            Previous
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">Previous</span>
+                    </li>
+                    {% endif %}
+
+                    {% for page_num in assets.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                        {% if page_num %}
+                        <li class="page-item {% if page_num == assets.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('assets.view_assets', page=page_num, search=search, status=status, asset_type=asset_type) }}">
+                                {{ page_num }}
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if assets.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('assets.view_assets', page=assets.next_num, search=search, status=status, asset_type=asset_type) }}">
+                            Next
+                        </a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">Next</span>
+                    </li>
+                    {% endif %}
+
+                </ul>
+            </nav>
+
+        </div> </div> </div> {% endblock %}

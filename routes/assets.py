@@ -2,25 +2,74 @@ from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, url_for, abort
 from flask_login import login_required, current_user
 from models import db, Asset, User
+from sqlalchemy import or_
 
+# Define Blueprint first before registering routes
 assets = Blueprint("assets", __name__)
 
-
 # ==========================
-# View Assets
+# View Assets (With Filters & Pagination)
 # ==========================
 @assets.route("/assets")
 @login_required
 def view_assets():
-
     if current_user.role != "Admin":
         abort(403)
 
-    assets_list = Asset.query.all()
+    search = request.args.get("search", "").strip()
+    status = request.args.get("status", "")
+    asset_type = request.args.get("asset_type", "")
+    page = request.args.get("page", 1, type=int)
+
+    query = Asset.query
+
+    if search:
+        query = query.filter(
+            or_(
+                Asset.asset_id.ilike(f"%{search}%"),
+                Asset.asset_name.ilike(f"%{search}%"),
+                Asset.brand.ilike(f"%{search}%"),
+                Asset.model.ilike(f"%{search}%"),
+                Asset.serial_number.ilike(f"%{search}%"),
+                Asset.assigned_to.ilike(f"%{search}%")
+            )
+        )
+
+    if status:
+        query = query.filter(Asset.status == status)
+
+    if asset_type:
+        query = query.filter(Asset.asset_type == asset_type)
+
+    assets_pagination = query.order_by(Asset.id.desc()).paginate(
+        page=page,
+        per_page=10,
+        error_out=False
+    )
 
     return render_template(
         "view_assets.html",
-        assets=assets_list
+        assets=assets_pagination,
+        search=search,
+        status=status,
+        asset_type=asset_type
+    )
+
+
+# ==========================
+# Asset Details
+# ==========================
+@assets.route("/assets/<int:id>")
+@login_required
+def asset_details(id):
+    if current_user.role != "Admin":
+        abort(403)
+
+    asset = Asset.query.get_or_404(id)
+
+    return render_template(
+        "asset_details.html",
+        asset=asset
     )
 
 
@@ -30,12 +79,10 @@ def view_assets():
 @assets.route("/assets/create", methods=["GET", "POST"])
 @login_required
 def create_asset():
-
     if current_user.role != "Admin":
         abort(403)
 
     if request.method == "POST":
-
         purchase_date = request.form.get("purchase_date")
         warranty_end = request.form.get("warranty_end")
 
@@ -78,14 +125,12 @@ def create_asset():
 @assets.route("/assets/edit/<int:id>", methods=["GET", "POST"])
 @login_required
 def edit_asset(id):
-
     if current_user.role != "Admin":
         abort(403)
 
     asset = Asset.query.get_or_404(id)
 
     if request.method == "POST":
-
         purchase_date = request.form.get("purchase_date")
         warranty_end = request.form.get("warranty_end")
 
@@ -127,18 +172,14 @@ def edit_asset(id):
 @assets.route("/assets/assign/<int:id>", methods=["GET", "POST"])
 @login_required
 def assign_asset(id):
-
     if current_user.role != "Admin":
         abort(403)
 
     asset = Asset.query.get_or_404(id)
-
     users = User.query.all()
 
     if request.method == "POST":
-
         user_id = request.form.get("user_id")
-
         user = User.query.get_or_404(user_id)
 
         assignment = AssetAssignment(
@@ -167,7 +208,6 @@ def assign_asset(id):
 @assets.route("/assets/delete/<int:id>")
 @login_required
 def delete_asset(id):
-
     if current_user.role != "Admin":
         abort(403)
 
