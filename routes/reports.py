@@ -4,9 +4,85 @@ from flask import send_file
 from openpyxl import Workbook
 from io import BytesIO
 from models import Ticket, Asset, User
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import Paragraph
+from reportlab.lib.units import inch
+from io import BytesIO
+from flask import send_file
 
 reports = Blueprint("reports", __name__)
+@reports.route("/reports/tickets/pdf")
+@login_required
+def export_ticket_pdf():
 
+    if current_user.role != "Admin":
+        abort(403)
+
+    buffer = BytesIO()
+
+    doc = SimpleDocTemplate(buffer)
+
+    elements = []
+
+    styles = getSampleStyleSheet()
+
+    elements.append(
+        Paragraph(
+            "<b>IT Helpdesk Ticket Report</b>",
+            styles["Title"]
+        )
+    )
+
+    data = [[
+        "Ticket No",
+        "Title",
+        "Category",
+        "Priority",
+        "Status"
+    ]]
+
+    tickets = Ticket.query.all()
+
+    for ticket in tickets:
+
+        data.append([
+            ticket.ticket_number,
+            ticket.title,
+            ticket.category,
+            ticket.priority,
+            ticket.status
+        ])
+
+    table = Table(data)
+
+    table.setStyle(TableStyle([
+
+        ("BACKGROUND",(0,0),(-1,0),colors.darkblue),
+
+        ("TEXTCOLOR",(0,0),(-1,0),colors.white),
+
+        ("GRID",(0,0),(-1,-1),1,colors.black),
+
+        ("BACKGROUND",(0,1),(-1,-1),colors.beige),
+
+        ("ALIGN",(0,0),(-1,-1),"CENTER")
+
+    ]))
+
+    elements.append(table)
+
+    doc.build(elements)
+
+    buffer.seek(0)
+
+    return send_file(
+        buffer,
+        download_name="Ticket_Report.pdf",
+        as_attachment=True,
+        mimetype="application/pdf"
+    )
 @reports.route("/reports/tickets/excel")
 @login_required
 def export_ticket_excel():

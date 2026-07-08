@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Assign Asset{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h2>Assign Asset</h2>
+
+    <hr>
+
+    <form method="POST">
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Asset
+            </label>
+
+            <input
+                class="form-control"
+                value="{{ asset.asset_name }}"
+                readonly>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                User
+            </label>
+
+            <select
+                name="user_id"
+                class="form-select">
+
+                {% for user in users %}
+
+                <option value="{{ user.id }}">
+                    {{ user.name }}
+                </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+        <button class="btn btn-primary">
+            Assign Asset
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

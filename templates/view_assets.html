@@ -1,88 +1,99 @@
 {% extends "base.html" %}
 
-{% block title %}View Assets{% endblock %}
+{% block title %}Asset Management{% endblock %}
 
 {% block content %}
 
-<div class="container mt-5">
+<div class="container-fluid mt-4">
 
-    <h2>Asset List</h2>
-    <hr>
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">Asset Management</h2>
+            <small class="text-muted">
+                View, manage, assign, and track IT assets
+            </small>
+        </div>
 
-    <div class="d-flex justify-content-between mb-3">
-        <a href="{{ url_for('assets.create_asset') }}" class="btn btn-primary">
-            + Add New Asset
-        </a>
+        {{ url_for('assets.create_asset') }}
     </div>
 
-    <!-- Search Form -->
-    <form method="GET" action="{{ url_for('assets.view_assets') }}" class="mb-3">
-        <div class="input-group">
-            <input
-                type="text"
-                name="search"
-                class="form-control"
-                placeholder="Search by Asset ID, Name, Brand or Assigned To"
-                value="{{ request.args.get('search', '') }}"
-            >
-            <button class="btn btn-success" type="submit">
-                Search
-            </button>
-            <a href="{{ url_for('assets.view_assets') }}" class="btn btn-secondary">
-                Reset
-            </a>
+    <!-- Search Bar -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+
+             url_for('assets.view_assets') }}">
+
+                <div class="input-group">
+
+                    <input
+                        type="text"
+                        name="search"
+                        class="form-control"
+                        placeholder="Search by Asset ID, Asset Name, Brand or Assigned User"
+                        value="{{ request.args.get('search', '') }}"
+                    >
+
+                    <button class="btn btn-success" type="submit">
+                        Search
+                    </button>
+
+                    {{ url_for('assets.view_assets') }}">
+                        Reset
+                    </a>
+
+                </div>
+
+            </form>
+
         </div>
-    </form>
+    </div>
 
-    <table class="table table-bordered table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Asset ID</th>
-                <th>Asset Name</th>
-                <th>Type</th>
-                <th>Brand</th>
-                <th>Assigned To</th>
-                <th>Status</th>
-                <th width="180">Action</th>
-            </tr>
-        </thead>
+    <!-- Asset Table -->
+    <div class="card shadow-sm">
+        <div class="card-body">
 
-        <tbody>
-            {% if assets %}
-                {% for asset in assets %}
-                <tr>
-                    <td>{{ asset.id }}</td>
-                    <td>{{ asset.asset_id }}</td>
-                    <td>{{ asset.asset_name }}</td>
-                    <td>{{ asset.asset_type }}</td>
-                    <td>{{ asset.brand }}</td>
-                    <td>{{ asset.assigned_to or '-' }}</td>
-                    <td>{{ asset.status }}</td>
-                    <td>
-                        <a href="{{ url_for('assets.edit_asset', id=asset.id) }}"
-                           class="btn btn-warning btn-sm">
-                            ✏️ Edit
-                        </a>
+            <div class="table-responsive">
 
-                        <a href="{{ url_for('assets.delete_asset', id=asset.id) }}"
-                           class="btn btn-danger btn-sm"
-                           onclick="return confirm('Are you sure you want to delete this asset?');">
-                            🗑 Delete
-                        </a>
-                    </td>
-                </tr>
-                {% endfor %}
-            {% else %}
-                <tr>
-                    <td colspan="8" class="text-center">
-                        No Assets Found
-                    </td>
-                </tr>
-            {% endif %}
-        </tbody>
-    </table>
+                <table class="table table-hover table-bordered align-middle">
 
-</div>
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Asset ID</th>
+                            <th>Asset Name</th>
+                            <th>Type</th>
+                            <th>Brand</th>
+                            <th>Assigned To</th>
+                            <th>Status</th>
+                            <th width="250">Actions</th>
+                        </tr>
+                    </thead>
 
-{% endblock %}
+                    <tbody>
+
+                    {% if assets %}
+
+                        {% for asset in assets %}
+
+                        <tr>
+
+                            <td>{{ asset.id }}</td>
+
+                            <td>
+                                <strong>{{ asset.asset_id }}</strong>
+                            </td>
+
+                            <td>{{ asset.asset_name }}</td>
+
+                            <td>{{ asset.asset_type }}</td>
+
+                            <td>{{ asset.brand }}</td>
+
+                            <td>
+                                {{ asset.assigned_to if asset.assigned_to else '-' }}
+                            </td>
+
+                            <td>
+
+                                {% if asset.status == "Assigned
