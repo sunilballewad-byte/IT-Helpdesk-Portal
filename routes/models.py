@@ -60,3 +60,38 @@ class AssetAssignment(db.Model):
             f"User={self.user_id}, "
             f"Status={self.status}>"
         )
+
+
+class Ticket(db.Model):
+    __tablename__ = "tickets"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    ticket_number = db.Column(
+        db.String(50),
+        unique=True,
+        nullable=False
+    )
+
+    title = db.Column(
+        db.String(200),
+        nullable=False
+    )
+
+    description = db.Column(
+        db.Text,
+        nullable=False
+    )
+
+    status = db.Column(
+        db.String(50),
+        default="Open"
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=db.func.current_timestamp()
+    )
+
+    def __repr__(self):
+        return f"<Ticket {self.ticket_number}>"

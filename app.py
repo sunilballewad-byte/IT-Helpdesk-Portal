@@ -11,11 +11,13 @@ from routes.admin import admin
 from routes.assets import assets
 from routes.users import users
 from routes.reports import reports
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
 db.init_app(app)
+migrate = Migrate(app, db)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
