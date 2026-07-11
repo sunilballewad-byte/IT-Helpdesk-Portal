@@ -1,8 +1,8 @@
 import os
-import random
+from datetime import datetime
 
 from flask import Blueprint, render_template, request, redirect, url_for
-from flask_login import login_required
+from flask_login import login_required, current_user
 from sqlalchemy import or_
 from werkzeug.utils import secure_filename
 
@@ -10,6 +10,30 @@ from config import Config
 from models import db, Ticket
 
 tickets = Blueprint("tickets", __name__)
+
+
+# =====================================
+# Generate Ticket Number
+# =====================================
+def generate_ticket_number():
+    year = datetime.now().year
+    prefix = f"INC-{year}-"
+
+    numbers = []
+
+    existing_tickets = Ticket.query.all()
+
+    for ticket in existing_tickets:
+        if ticket.ticket_number and ticket.ticket_number.startswith(prefix):
+            try:
+                number = int(ticket.ticket_number.split("-")[-1])
+                numbers.append(number)
+            except ValueError:
+                pass
+
+    next_number = max(numbers, default=0) + 1
+
+    return f"INC-{year}-{next_number:06d}"
 
 
 # =====================================
@@ -56,10 +80,8 @@ def create_ticket():
 
         file = request.files.get("attachment")
 
-        if file and file.filename != "":
-
+        if file and file.filename:
             filename = secure_filename(file.filename)
-
             file.save(
                 os.path.join(
                     Config.UPLOAD_FOLDER,
@@ -68,27 +90,17 @@ def create_ticket():
             )
 
         ticket = Ticket(
-
-            ticket_number=f"INC{random.randint(10000,99999)}",
-
+            ticket_number=generate_ticket_number(),
             title=request.form.get("title"),
-
             description=request.form.get("description"),
-
             category=request.form.get("category"),
-
             priority=request.form.get("priority"),
-
             status="Open",
-
-            created_by="Admin",
-
+            created_by=current_user.email,
             attachment=filename
-
         )
 
         db.session.add(ticket)
-
         db.session.commit()
 
         return redirect(url_for("tickets.view_tickets"))
@@ -108,13 +120,9 @@ def edit_ticket(id):
     if request.method == "POST":
 
         ticket.title = request.form.get("title")
-
         ticket.description = request.form.get("description")
-
         ticket.category = request.form.get("category")
-
         ticket.priority = request.form.get("priority")
-
         ticket.status = request.form.get("status")
 
         db.session.commit()
@@ -137,7 +145,6 @@ def delete_ticket(id):
     ticket = Ticket.query.get_or_404(id)
 
     db.session.delete(ticket)
-
     db.session.commit()
 
     return redirect(url_for("tickets.view_tickets"))

@@ -7,7 +7,6 @@
 <div class="container mt-5">
 
     <h2>Create New Ticket</h2>
-
     <hr>
 
     <form method="POST" enctype="multipart/form-data">
@@ -25,65 +24,95 @@
         <div class="mb-3">
             <label class="form-label">Description</label>
             <textarea
+                id="description"
                 name="description"
-                rows="5"
+                rows="7"
                 class="form-control"
                 placeholder="Describe your issue"
                 required></textarea>
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Category</label>
+            <label class="form-label">
+                Category <span class="text-danger">*</span>
+            </label>
             <select
-                name="category"
                 class="form-select"
+                id="category"
+                name="category"
+                onchange="loadSubCategory(); setPriority();"
                 required>
-                <option>Hardware</option>
-                <option>Software</option>
-                <option>Network</option>
-                <option>Printer</option>
-                <option>Email</option>
-                <option>VPN</option>
+                <option value="">-- Select Category --</option>
+                <option value="Hardware">Hardware</option>
+                <option value="Software">Software</option>
+                <option value="Network">Network</option>
+                <option value="Email">Email</option>
+                <option value="Access">Access</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">
+                Sub Category
+            </label>
+            <select
+                class="form-select"
+                id="subcategory"
+                name="subcategory"
+                onchange="loadItems()">
+                <option value="">-- Select Sub Category --</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">
+                Item
+            </label>
+            <select
+                class="form-select"
+                id="item"
+                name="item"
+                onchange="loadDescription()">
+                <option value="">-- Select Item --</option>
             </select>
         </div>
 
         <div class="mb-3">
             <label class="form-label">Priority</label>
             <select
+                id="priority"
                 name="priority"
                 class="form-select"
                 required>
-                <option>Low</option>
-                <option selected>Medium</option>
-                <option>High</option>
-                <option>Critical</option>
+                <option value="Low">Low</option>
+                <option value="Medium" selected>Medium</option>
+                <option value="High">High</option>
+                <option value="Critical">Critical</option>
             </select>
         </div>
 
-        <!-- Attachment -->
         <div class="mb-3">
-
             <label class="form-label">
                 Attachment
             </label>
-
             <input
                 type="file"
                 name="attachment"
                 class="form-control">
-
         </div>
 
         <button
             type="submit"
             class="btn btn-success">
-
             Create Ticket
-
         </button>
 
     </form>
 
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/category.js') }}"></script>
 {% endblock %}
