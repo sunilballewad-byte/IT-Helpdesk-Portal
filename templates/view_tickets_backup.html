@@ -1,4 +1,4 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 
 {% block title %}View Tickets{% endblock %}
 
@@ -59,7 +59,6 @@
                     <th>Category</th>
                     <th>Priority</th>
                     <th>Status</th>
-                    <th>SLA</th>
                     <th>Assigned To</th>
                     <th width="250">Action</th>
                 </tr>
@@ -72,6 +71,51 @@
             {% if tickets %}
 
                 {% for ticket in tickets %}
+<!-- ============================= -->
+<!-- Ticket Activity Timeline -->
+<!-- ============================= -->
+
+<div class="card shadow-sm mt-4">
+
+    <div class="card-header">
+        <h5 class="mb-0">
+            📜 Activity Timeline
+        </h5>
+    </div>
+
+    <div class="card-body">
+
+        {% if ticket.activities %}
+
+            {% for activity in ticket.activities|reverse %}
+
+                <div class="border-start border-3 ps-3 mb-4">
+
+                    <div class="fw-bold">
+                        {{ activity.action }}
+                    </div>
+
+                    <small class="text-muted">
+                        {{ activity.performed_by }}
+                        •
+                        {{ activity.created_at|ist }}
+                    </small>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="text-center text-muted py-3">
+                No activity recorded yet.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
                 <tr>
 
                     <td>{{ ticket.id }}</td>
@@ -114,44 +158,7 @@
                             </span>
 
                         {% endif %}
-<!-- SLA -->
-<td>
 
-    {% if ticket.sla_due_at %}
-
-        {% if ticket.status in ["Resolved", "Closed"] %}
-
-            <span class="badge bg-success">
-                COMPLETED
-            </span>
-
-        {% elif ticket.sla_due_at < now %}
-
-            <span class="badge bg-danger">
-                OVERDUE
-            </span>
-
-        {% else %}
-
-            <span class="badge bg-primary">
-                ACTIVE
-            </span>
-
-        {% endif %}
-
-        <br>
-
-        <small class="text-muted">
-            {{ ticket.sla_due_at|sla_remaining }}
-        </small>
-
-    {% else %}
-
-        <span class="text-muted">-</span>
-
-    {% endif %}
-
-</td>
                     </td>
 
 
@@ -221,7 +228,7 @@
 
                         <a href="{{ url_for('tickets.ticket_details', id=ticket.id) }}"
                            class="btn btn-primary btn-sm me-1">
-                            View
+                            👁 View
                         </a>
 
 
@@ -231,7 +238,7 @@
 
                             <a href="{{ url_for('tickets.edit_ticket', id=ticket.id) }}"
                                class="btn btn-warning btn-sm me-1">
-                                Edit
+                                ✏ Edit
                             </a>
 
 
@@ -243,7 +250,7 @@
 
     <button type="submit"
             class="btn btn-danger btn-sm">
-        Delete
+        🗑 Delete
     </button>
 
 </form>

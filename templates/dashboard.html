@@ -13,7 +13,7 @@
     <!-- Ticket Summary -->
     <div class="row">
 
-        <div class="col-md-3 mb-3">
+        <div class="col-md mb-3">
             <div class="card shadow text-center">
                 <div class="card-body">
                     <h5>Total Tickets</h5>
@@ -22,7 +22,7 @@
             </div>
         </div>
 
-        <div class="col-md-3 mb-3">
+        <div class="col-md mb-3">
             <div class="card shadow text-center">
                 <div class="card-body">
                     <h5>Open Tickets</h5>
@@ -31,7 +31,7 @@
             </div>
         </div>
 
-        <div class="col-md-3 mb-3">
+        <div class="col-md mb-3">
             <div class="card shadow text-center">
                 <div class="card-body">
                     <h5>Closed Tickets</h5>
@@ -40,7 +40,7 @@
             </div>
         </div>
 
-        <div class="col-md-3 mb-3">
+        <div class="col-md mb-3">
             <div class="card shadow text-center">
                 <div class="card-body">
                     <h5>Pending Tickets</h5>
@@ -50,11 +50,90 @@
         </div>
 
     </div>
+<!-- SLA Summary -->
+<h3 class="mt-4">SLA Overview</h3>
 
+<div class="row mt-3">
+
+    <div class="col-md mb-3">
+        <div class="card shadow text-center border-primary">
+            <div class="card-body">
+                <h5>Active SLA</h5>
+                <h2>{{ active_sla }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md mb-3">
+        <div class="card shadow text-center border-danger">
+            <div class="card-body">
+                <h5>Overdue SLA</h5>
+                <h2>{{ overdue_sla }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md mb-3">
+        <div class="card shadow text-center border-warning">
+            <div class="card-body">
+                <h5>Critical Tickets</h5>
+                <h2>{{ critical_tickets }}</h2>
+            </div>
+        </div>
+    </div>
+
+<div class="col-md mb-3">
+    <div class="card shadow text-center border-success">
+        <div class="card-body">
+            <h5>SLA Met</h5>
+            <h2>{{ sla_met }}</h2>
+        </div>
+    </div>
+</div>
+
+<div class="col-md mb-3">
+    <div class="card shadow text-center border-danger">
+        <div class="card-body">
+            <h5>SLA Breached</h5>
+            <h2>{{ sla_breached }}</h2>
+        </div>
+    </div>
+</div>
+<!-- SLA Compliance -->
+<div class="card shadow mb-4">
+
+    <div class="card-body">
+
+        <div class="d-flex justify-content-between mb-2">
+            <h5 class="mb-0">SLA Compliance</h5>
+
+            <strong>
+                {{ sla_compliance }}%
+            </strong>
+        </div>
+
+        <div class="progress" style="height: 25px;">
+
+            <div class="progress-bar"
+                 role="progressbar"
+                 style="width: {{ sla_compliance }}%;"
+                 aria-valuenow="{{ sla_compliance }}"
+                 aria-valuemin="0"
+                 aria-valuemax="100">
+
+                {{ sla_compliance }}%
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
     <!-- Asset Summary -->
     <div class="row mt-3">
 
-        <div class="col-md-3 mb-3">
+        <div class="col-md mb-3">
             <div class="card shadow text-center">
                 <div class="card-body">
                     <h5>Total Assets</h5>
@@ -63,7 +142,7 @@
             </div>
         </div>
 
-        <div class="col-md-3 mb-3">
+        <div class="col-md mb-3">
             <div class="card shadow text-center">
                 <div class="card-body">
                     <h5>Assigned Assets</h5>
@@ -72,7 +151,7 @@
             </div>
         </div>
 
-        <div class="col-md-3 mb-3">
+        <div class="col-md mb-3">
             <div class="card shadow text-center">
                 <div class="card-body">
                     <h5>Available Assets</h5>
@@ -81,7 +160,7 @@
             </div>
         </div>
 
-        <div class="col-md-3 mb-3">
+        <div class="col-md mb-3">
             <div class="card shadow text-center">
                 <div class="card-body">
                     <h5>Repair Assets</h5>
@@ -135,6 +214,7 @@
                 <th>Category</th>
                 <th>Priority</th>
                 <th>Status</th>
+                <th>SLA</th>
             </tr>
         </thead>
 
@@ -165,7 +245,31 @@
                         <span class="badge bg-info">{{ ticket.status }}</span>
                     {% endif %}
                 </td>
+<td>
+    {% if ticket.sla_due_at %}
 
+        {% if ticket.resolved_at %}
+
+            {% if ticket.resolved_at <= ticket.sla_due_at %}
+                <span class="badge bg-success">SLA MET</span>
+            {% else %}
+                <span class="badge bg-danger">BREACHED</span>
+            {% endif %}
+
+        {% elif ticket.sla_due_at < now %}
+
+            <span class="badge bg-danger">OVERDUE</span>
+
+        {% else %}
+
+            <span class="badge bg-primary">ACTIVE</span>
+
+        {% endif %}
+
+    {% else %}
+        -
+    {% endif %}
+</td>
             </tr>
             {% endfor %}
 

@@ -51,7 +51,14 @@ class Ticket(db.Model):
         db.DateTime,
         default=db.func.current_timestamp()
     )
-
+    sla_due_at = db.Column(
+        db.DateTime,
+        nullable=True
+    )
+    resolved_at = db.Column(
+        db.DateTime,
+        nullable=True
+    )
     def __repr__(self):
         return f"<Ticket {self.ticket_number}>"
 

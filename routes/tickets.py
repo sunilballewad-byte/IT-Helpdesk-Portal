@@ -1,5 +1,5 @@
 import os
-
+from datetime import datetime, timedelta
 from flask import (
     Blueprint,
     render_template,
@@ -81,49 +81,85 @@ def view_tickets():
     tickets_list = query.order_by(Ticket.id.desc()).all()
 
     return render_template(
-        "view_tickets.html",
-        tickets=tickets_list,
-        search=search
-    )
+    "view_tickets.html",
+    tickets=tickets_list,
+    search=search,
+    now=datetime.utcnow()
+)
 
 
 # =====================================
 # Create Ticket
 # =====================================
-@tickets.route("/tickets/create", methods=["GET", "POST"])
+
+@tickets.route(
+    "/tickets/create",
+    methods=["GET", "POST"]
+)
 @login_required
 def create_ticket():
+
     if request.method == "POST":
+
         filename = None
+
         file = request.files.get("attachment")
 
         if file and file.filename:
-            filename = secure_filename(file.filename)
-            os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
-            file.save(os.path.join(Config.UPLOAD_FOLDER, filename))
 
+            filename = secure_filename(
+                file.filename
+            )
+
+            file.save(
+                os.path.join(
+                    Config.UPLOAD_FOLDER,
+                    filename
+                )
+            )
+        priority = request.form.get("priority")
+
+        sla_hours = {
+            "Critical": 4,
+            "High": 24,
+            "Medium": 48,
+            "Low": 72
+        }
+
+        sla_due_at = datetime.utcnow() + timedelta(
+            hours=sla_hours.get(priority, 48)
+        )
         ticket = Ticket(
             ticket_number=generate_ticket_number(),
             title=request.form.get("title"),
             description=request.form.get("description"),
             category=request.form.get("category"),
-            priority=request.form.get("priority", "Medium"),
+            priority=priority,
             status="Open",
             created_by=current_user.email,
-            attachment=filename
+            attachment=filename,
+            sla_due_at=sla_due_at
         )
 
         db.session.add(ticket)
-        db.session.commit()  # Commit first to generate the ticket ID 
 
-        # Now log the creation activity using the new ticket ID
-        log_activity(ticket.id, "Ticket created")
+        # First commit generates ticket ID
         db.session.commit()
 
-        return redirect(url_for("tickets.view_tickets"))
+        log_activity(
+            ticket.id,
+            f"Ticket {ticket.ticket_number} created"
+        )
 
-    return render_template("create_ticket.html")
+        db.session.commit()
 
+        return redirect(
+            url_for("tickets.view_tickets")
+        )
+
+    return render_template(
+        "create_ticket.html"
+    )
 
 # =====================================
 # Ticket Details
@@ -142,10 +178,11 @@ def ticket_details(id):
     users = User.query.filter(User.is_active.is_(True)).order_by(User.name.asc()).all()
 
     return render_template(
-        "ticket_details.html",
-        ticket=ticket,
-        users=users
-    )
+    "ticket_details.html",
+    ticket=ticket,
+    users=users,
+    now=datetime.utcnow()
+)
 
 
 # =====================================
@@ -182,9 +219,14 @@ def add_comment(id):
 # =====================================
 # Assign Ticket
 # =====================================
-@tickets.route("/tickets/<int:id>/assign", methods=["POST"])
+
+@tickets.route(
+    "/tickets/<int:id>/assign",
+    methods=["POST"]
+)
 @login_required
 def assign_ticket(id):
+
     if not is_admin():
         abort(403)
 
@@ -193,19 +235,54 @@ def assign_ticket(id):
     if not ticket:
         abort(404)
 
-    assigned_to = request.form.get("assigned_to", "").strip()
-    ticket.assigned_to = assigned_to if assigned_to else None
+    assigned_to = request.form.get(
+        "assigned_to",
+        ""
+    ).strip()
 
-    # Log the activity
-    log_activity(
-        ticket.id,
-        f"Ticket assigned to {ticket.assigned_to or 'Unassigned'}"
-    )
+    # Do nothing if no engineer selected
+    if not assigned_to:
+        return redirect(
+            url_for(
+                "tickets.view_tickets"
+            )
+        )
+
+    old_assigned_to = ticket.assigned_to
+
+    # Do nothing if same engineer already assigned
+    if old_assigned_to == assigned_to:
+        return redirect(
+            url_for(
+                "tickets.ticket_details",
+                id=ticket.id
+            )
+        )
+
+    ticket.assigned_to = assigned_to
+
+    if old_assigned_to:
+
+        log_activity(
+            ticket.id,
+            f"Ticket reassigned from {old_assigned_to} to {assigned_to}"
+        )
+
+    else:
+
+        log_activity(
+            ticket.id,
+            f"Ticket assigned to {assigned_to}"
+        )
+
     db.session.commit()
 
-    return redirect(url_for("tickets.ticket_details", id=ticket.id))
-
-
+    return redirect(
+        url_for(
+            "tickets.ticket_details",
+            id=ticket.id
+        )
+    )
 # =====================================
 # Update Ticket Status
 # =====================================
@@ -225,23 +302,37 @@ def update_status(id):
 
     if new_status and old_status != new_status:
         ticket.status = new_status
-        
-        # Log the activity
+
+        # Set resolved date
+        if new_status in ["Resolved", "Closed"]:
+            ticket.resolved_at = datetime.utcnow()
+
+        elif old_status in ["Resolved", "Closed"]:
+            ticket.resolved_at = None
+
         log_activity(
             ticket.id,
             f"Status changed from {old_status} to {new_status}"
         )
+
         db.session.commit()
 
-    return redirect(url_for("tickets.ticket_details", id=id))
+    return redirect(
+        url_for("tickets.ticket_details", id=id)
+    )
 
 
 # =====================================
 # Edit Ticket
 # =====================================
-@tickets.route("/tickets/edit/<int:id>", methods=["GET", "POST"])
+
+@tickets.route(
+    "/tickets/edit/<int:id>",
+    methods=["GET", "POST"]
+)
 @login_required
 def edit_ticket(id):
+
     if not is_admin():
         abort(403)
 
@@ -251,10 +342,33 @@ def edit_ticket(id):
         abort(404)
 
     if request.method == "POST":
+
+        old_title = ticket.title
+        old_priority = ticket.priority
+
         ticket.title = request.form.get("title")
         ticket.description = request.form.get("description")
         ticket.category = request.form.get("category")
         ticket.priority = request.form.get("priority")
+
+        log_activity(
+            ticket.id,
+            f"Ticket edited. Priority changed from {old_priority} to {ticket.priority}"
+        )
+
+        db.session.commit()
+
+        return redirect(
+            url_for(
+                "tickets.ticket_details",
+                id=ticket.id
+            )
+        )
+
+    return render_template(
+        "edit_ticket.html",
+        ticket=ticket
+    )
         # =====================================
 # Delete Ticket
 # =====================================
@@ -282,4 +396,36 @@ def delete_ticket(id):
 
     return redirect(
         url_for("tickets.view_tickets")
+    )
+# =====================================
+# Download Ticket Attachment
+# =====================================
+
+@tickets.route(
+    "/tickets/<int:id>/attachment"
+)
+@login_required
+def download_attachment(id):
+
+    ticket = db.session.get(
+        Ticket,
+        id
+    )
+
+    if not ticket:
+        abort(404)
+
+    if (
+        not is_admin()
+        and ticket.created_by != current_user.email
+    ):
+        abort(403)
+
+    if not ticket.attachment:
+        abort(404)
+
+    return send_from_directory(
+        Config.UPLOAD_FOLDER,
+        ticket.attachment,
+        as_attachment=True
     )

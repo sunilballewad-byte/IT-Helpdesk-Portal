@@ -237,10 +237,61 @@
                         <th>Created Date</th>
 
                         <td>
-                            {{ ticket.created_at }}
+                            {{ ticket.created_at|ist if ticket.created_at else "-" }}
                         </td>
                     </tr>
+<!-- SLA Due Date -->
+<tr>
+    <th>SLA Due Date</th>
 
+    <td>
+        {% if ticket.sla_due_at %}
+
+            {{ ticket.sla_due_at|ist }}
+<br>
+
+<small class="text-muted">
+    {{ ticket.sla_due_at|sla_remaining }}
+</small>
+            {% if ticket.status in ["Resolved", "Closed"] %}
+
+    {% if ticket.resolved_at and ticket.resolved_at <= ticket.sla_due_at %}
+
+        <span class="badge bg-success ms-2">
+            SLA MET
+        </span>
+
+    {% else %}
+
+        <span class="badge bg-danger ms-2">
+            SLA BREACHED
+        </span>
+
+    {% endif %}
+
+            {% elif ticket.sla_due_at < now %}
+
+                <span class="badge bg-danger ms-2">
+                    OVERDUE
+                </span>
+
+            {% else %}
+
+                <span class="badge bg-primary ms-2">
+                    SLA ACTIVE
+                </span>
+
+            {% endif %}
+
+        {% else %}
+
+            <span class="text-muted">
+                SLA not available
+            </span>
+
+        {% endif %}
+    </td>
+</tr>
 
 
                     <tr>
@@ -307,7 +358,91 @@
 
 
     </div>
+<!-- ===================================== -->
+<!-- Activity Timeline -->
+<!-- ===================================== -->
 
+<div class="card shadow-sm mt-4">
+
+    <div class="card-header">
+        <h5 class="mb-0">Activity Timeline</h5>
+    </div>
+
+    <div class="card-body">
+
+        {% if ticket.activities %}
+
+            {% for activity in ticket.activities|reverse %}
+
+                <div class="border-start border-3 ps-3 mb-4">
+
+                    <div class="mb-1">
+
+                        {% if "created" in activity.action|lower %}
+
+                            <span class="badge bg-success me-2">
+                                CREATED
+                            </span>
+
+                        {% elif "status" in activity.action|lower %}
+
+                            <span class="badge bg-warning text-dark me-2">
+                                STATUS
+                            </span>
+
+                        {% elif "assigned" in activity.action|lower %}
+
+                            <span class="badge bg-info text-dark me-2">
+                                ASSIGNED
+                            </span>
+
+                        {% elif "comment" in activity.action|lower %}
+
+                            <span class="badge bg-primary me-2">
+                                COMMENT
+                            </span>
+
+                        {% elif "edited" in activity.action|lower %}
+
+                            <span class="badge bg-secondary me-2">
+                                EDITED
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge bg-dark me-2">
+                                ACTIVITY
+                            </span>
+
+                        {% endif %}
+
+                        <strong>
+                            {{ activity.action }}
+                        </strong>
+
+                    </div>
+
+                    <small class="text-muted">
+                        {{ activity.performed_by }}
+                        -
+                        {{ activity.created_at|ist }}
+                    </small>
+
+                </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="text-center text-muted py-3">
+                No activity recorded yet.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
 
 
 

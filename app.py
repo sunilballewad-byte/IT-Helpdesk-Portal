@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 from flask_login import LoginManager
-from datetime import timedelta
+from datetime import datetime, timedelta
 from config import Config
 from models import db, User
 
@@ -36,7 +36,25 @@ def convert_to_ist(value):
     return ist_time.strftime(
         "%d-%m-%Y %I:%M %p"
     )
+@app.template_filter("sla_remaining")
+def sla_remaining(value):
 
+    if value is None:
+        return "SLA not available"
+
+    difference = value - datetime.utcnow()
+
+    total_minutes = int(
+        abs(difference.total_seconds()) // 60
+    )
+
+    hours = total_minutes // 60
+    minutes = total_minutes % 60
+
+    if difference.total_seconds() < 0:
+        return f"{hours}h {minutes}m overdue"
+
+    return f"{hours}h {minutes}m remaining"
 
 @login_manager.user_loader
 def load_user(user_id):
