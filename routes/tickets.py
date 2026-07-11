@@ -1,4 +1,4 @@
-import os
+﻿import os
 from datetime import datetime, timedelta
 from flask import (
     Blueprint,
@@ -37,8 +37,61 @@ def log_activity(ticket_id, action):
         performed_by=current_user.email
     )
     db.session.add(activity)
+# =====================================
+# Helper: Auto Escalate Overdue Tickets
+# =====================================
+def process_sla_escalations():
+    now = datetime.utcnow()
 
+    overdue_tickets = Ticket.query.filter(
+        Ticket.sla_due_at.isnot(None),
+        Ticket.sla_due_at < now,
+        ~Ticket.status.in_(["Resolved", "Closed"])
+    ).all()
 
+    changed = False
+
+    for ticket in overdue_tickets:
+        overdue_hours = (
+            now - ticket.sla_due_at
+        ).total_seconds() / 3600
+
+        if overdue_hours >= 24:
+            new_level = 3
+        elif overdue_hours >= 4:
+            new_level = 2
+        else:
+            new_level = 1
+
+        if ticket.escalation_level < new_level:
+            ticket.escalation_level = new_level
+
+            if ticket.escalated_at is None:
+                ticket.escalated_at = now
+
+            action_text = (
+                f"ESCALATED Level {new_level} - "
+                f"SLA breached for {ticket.ticket_number}"
+            )
+
+            existing_activity = TicketActivity.query.filter_by(
+                ticket_id=ticket.id,
+                action=action_text
+            ).first()
+
+            if not existing_activity:
+                activity = TicketActivity(
+                    ticket_id=ticket.id,
+                    action=action_text,
+                    performed_by="System"
+                )
+
+                db.session.add(activity)
+
+            changed = True
+
+    if changed:
+        db.session.commit()
 # =====================================
 # Helper: Generate Ticket Number
 # =====================================
@@ -61,12 +114,61 @@ def generate_ticket_number():
 @tickets.route("/tickets")
 @login_required
 def view_tickets():
+    process_sla_escalations()
     search = request.args.get("search", "").strip()
+    ticket_filter = request.args.get("filter", "").strip()
+
     query = Ticket.query
 
     if not is_admin():
         query = query.filter(Ticket.created_by == current_user.email)
+    if ticket_filter == "escalated":
+        query = query.filter(
+            Ticket.escalated_at.isnot(None),
+            ~Ticket.status.in_(["Resolved", "Closed"])
+        )
+    elif ticket_filter == "active_sla":
+        query = query.filter(
+            Ticket.sla_due_at.isnot(None),
+            Ticket.sla_due_at >= datetime.utcnow(),
+            ~Ticket.status.in_(["Resolved", "Closed"])
+        )
 
+    elif ticket_filter == "overdue_sla":
+        query = query.filter(
+            Ticket.sla_due_at.isnot(None),
+            Ticket.sla_due_at < datetime.utcnow(),
+            ~Ticket.status.in_(["Resolved", "Closed"])
+        )
+
+    elif ticket_filter == "sla_met":
+        query = query.filter(
+            Ticket.sla_due_at.isnot(None),
+            Ticket.resolved_at.isnot(None),
+            Ticket.resolved_at <= Ticket.sla_due_at
+        )
+
+    elif ticket_filter == "sla_breached":
+        query = query.filter(
+            Ticket.sla_due_at.isnot(None),
+            Ticket.resolved_at.isnot(None),
+            Ticket.resolved_at > Ticket.sla_due_at
+        )
+
+    elif ticket_filter == "escalation_l1":
+        query = query.filter(
+            Ticket.escalation_level == 1
+        )
+
+    elif ticket_filter == "escalation_l2":
+        query = query.filter(
+            Ticket.escalation_level == 2
+        )
+
+    elif ticket_filter == "escalation_l3":
+        query = query.filter(
+            Ticket.escalation_level >= 3
+        )
     if search:
         query = query.filter(
             or_(
@@ -81,11 +183,12 @@ def view_tickets():
     tickets_list = query.order_by(Ticket.id.desc()).all()
 
     return render_template(
-    "view_tickets.html",
-    tickets=tickets_list,
-    search=search,
+        "view_tickets.html",
+        tickets=tickets_list,
+            search=search,
+    ticket_filter=ticket_filter,
     now=datetime.utcnow()
-)
+    )
 
 
 # =====================================

@@ -49,6 +49,22 @@ def dashboard_home():
         Ticket.resolved_at.isnot(None),
         Ticket.resolved_at > Ticket.sla_due_at
     ).count()
+    escalated_tickets = Ticket.query.filter(
+        Ticket.escalated_at.isnot(None),
+        ~Ticket.status.in_(["Resolved", "Closed"])
+    ).count()
+
+    escalation_l1 = Ticket.query.filter_by(
+        escalation_level=1
+    ).count()
+
+    escalation_l2 = Ticket.query.filter_by(
+        escalation_level=2
+    ).count()
+
+    escalation_l3 = Ticket.query.filter(
+        Ticket.escalation_level >= 3
+    ).count()
 
     total_completed_sla = sla_met + sla_breached
 
@@ -96,6 +112,10 @@ def dashboard_home():
         critical_tickets=critical_tickets,
         sla_met=sla_met,
         sla_breached=sla_breached,
+                escalated_tickets=escalated_tickets,
+                        escalation_l1=escalation_l1,
+        escalation_l2=escalation_l2,
+        escalation_l3=escalation_l3,
                 sla_compliance=sla_compliance,
         now=now
     )

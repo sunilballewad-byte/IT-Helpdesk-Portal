@@ -59,6 +59,15 @@ class Ticket(db.Model):
         db.DateTime,
         nullable=True
     )
+    escalated_at = db.Column(
+        db.DateTime,
+        nullable=True
+    )
+    escalation_level = db.Column(
+        db.Integer,
+        default=0,
+        nullable=False
+    )
     def __repr__(self):
         return f"<Ticket {self.ticket_number}>"
 

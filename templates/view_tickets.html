@@ -76,9 +76,25 @@
 
                     <td>{{ ticket.id }}</td>
 
-                    <td>
-                        <strong>{{ ticket.ticket_number }}</strong>
-                    </td>
+                  <td>
+    <strong>{{ ticket.ticket_number }}</strong>
+
+    {% if ticket.escalation_level == 1 %}
+    <span class="badge bg-warning text-dark ms-1">
+        ESCALATED L1
+    </span>
+
+{% elif ticket.escalation_level == 2 %}
+    <span class="badge bg-danger ms-1">
+        ESCALATED L2
+    </span>
+
+{% elif ticket.escalation_level >= 3 %}
+    <span class="badge bg-dark ms-1">
+        ESCALATED L3
+    </span>
+{% endif %}
+</td>
 
                     <td>{{ ticket.title }}</td>
 
@@ -114,6 +130,9 @@
                             </span>
 
                         {% endif %}
+
+</td>
+
 <!-- SLA -->
 <td>
 
@@ -150,8 +169,6 @@
         <span class="text-muted">-</span>
 
     {% endif %}
-
-</td>
                     </td>
 
 

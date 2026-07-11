@@ -56,22 +56,44 @@
 <div class="row mt-3">
 
     <div class="col-md mb-3">
+    <a href="{{ url_for('tickets.view_tickets', filter='active_sla') }}"
+       class="text-decoration-none text-dark">
+
         <div class="card shadow text-center border-primary">
             <div class="card-body">
                 <h5>Active SLA</h5>
                 <h2>{{ active_sla }}</h2>
             </div>
         </div>
-    </div>
 
-    <div class="col-md mb-3">
+    </a>
+</div>
+<div class="col-md mb-3">
+    <a href="{{ url_for('tickets.view_tickets', filter='overdue_sla') }}"
+       class="text-decoration-none text-dark">
+
         <div class="card shadow text-center border-danger">
             <div class="card-body">
                 <h5>Overdue SLA</h5>
                 <h2>{{ overdue_sla }}</h2>
             </div>
         </div>
-    </div>
+
+    </a>
+</div>
+    <div class="col-md mb-3">
+    <a href="{{ url_for('tickets.view_tickets', filter='escalated') }}"
+       class="text-decoration-none text-dark">
+
+        <div class="card shadow text-center border-danger">
+            <div class="card-body">
+                <h5>Escalated Tickets</h5>
+                <h2>{{ escalated_tickets }}</h2>
+            </div>
+        </div>
+
+    </a>
+</div>
 
     <div class="col-md mb-3">
         <div class="card shadow text-center border-warning">
@@ -82,22 +104,71 @@
         </div>
     </div>
 
-<div class="col-md mb-3">
-    <div class="card shadow text-center border-success">
-        <div class="card-body">
-            <h5>SLA Met</h5>
-            <h2>{{ sla_met }}</h2>
+<<div class="col-md mb-3">
+    <a href="{{ url_for('tickets.view_tickets', filter='sla_met') }}"
+       class="text-decoration-none text-dark">
+
+        <div class="card shadow text-center border-success">
+            <div class="card-body">
+                <h5>SLA Met</h5>
+                <h2>{{ sla_met }}</h2>
+            </div>
         </div>
-    </div>
+
+    </a>
 </div>
 
 <div class="col-md mb-3">
-    <div class="card shadow text-center border-danger">
-        <div class="card-body">
-            <h5>SLA Breached</h5>
-            <h2>{{ sla_breached }}</h2>
+    <a href="{{ url_for('tickets.view_tickets', filter='sla_breached') }}"
+       class="text-decoration-none text-dark">
+
+        <div class="card shadow text-center border-danger">
+            <div class="card-body">
+                <h5>SLA Breached</h5>
+                <h2>{{ sla_breached }}</h2>
+            </div>
         </div>
-    </div>
+
+    </a>
+</div>
+<!-- Escalation Level Summary -->
+<h3 class="mt-4">Escalation Levels</h3>
+
+<div class="row mt-3">
+
+    <div class="col-md-4 mb-3">
+    <a href="{{ url_for('tickets.view_tickets', filter='escalation_l1') }}"
+       class="text-decoration-none text-dark">
+        <div class="card shadow text-center border-warning">
+            <div class="card-body">
+                <h5>Level 1 Escalation</h5>
+                <h2>{{ escalation_l1 }}</h2>
+            </div>
+        </div>
+    </a>
+</div>
+
+    <<div class="col-md-4 mb-3">
+    <a href="{{ url_for('tickets.view_tickets', filter='escalation_l2') }}"
+       class="text-decoration-none text-dark">
+        <div class="card shadow text-center border-danger">
+            <div class="card-body">
+                <h5>Level 2 Escalation</h5>
+                <h2>{{ escalation_l2 }}</h2>
+            </div>
+        </div>
+    </a>
+</div>
+    <div class="col-md-4 mb-3">
+    <a href="{{ url_for('tickets.view_tickets', filter='escalation_l3') }}"
+       class="text-decoration-none text-dark">
+        <div class="card shadow text-center border-dark">
+            <div class="card-body">
+                <h5>Level 3 Escalation</h5>
+                <h2>{{ escalation_l3 }}</h2>
+            </div>
+        </div>
+    </a>
 </div>
 <!-- SLA Compliance -->
 <div class="card shadow mb-4">
@@ -179,7 +250,7 @@
         <div class="col-md-6 mb-4">
             <div class="card shadow">
                 <div class="card-header fw-bold">
-                    📊 Ticket Status
+                    ðŸ“Š Ticket Status
                 </div>
                 <div class="card-body">
                     <canvas id="ticketChart"></canvas>
@@ -190,7 +261,7 @@
         <div class="col-md-6 mb-4">
             <div class="card shadow">
                 <div class="card-header fw-bold">
-                    💻 Asset Status
+                    ðŸ’» Asset Status
                 </div>
                 <div class="card-body">
                     <canvas id="assetChart"></canvas>
