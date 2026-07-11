@@ -1,0 +1,439 @@
+{% extends "base.html" %}
+
+{% block title %}Ticket Details{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-0">
+                Ticket {{ ticket.ticket_number }}
+            </h2>
+
+            <small class="text-muted">
+                Ticket Details
+            </small>
+        </div>
+
+        <a href="{{ url_for('tickets.view_tickets') }}"
+           class="btn btn-secondary">
+            ← Back
+        </a>
+
+    </div>
+
+
+    <!-- Ticket Details Card -->
+    <div class="card shadow-sm">
+
+        <div class="card-header">
+            <h5 class="mb-0">
+                Ticket Information
+            </h5>
+        </div>
+
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered align-middle mb-0">
+
+
+                    <tr>
+                        <th width="250">Ticket Number</th>
+                        <td>
+                            <strong>
+                                {{ ticket.ticket_number }}
+                            </strong>
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <th>Title</th>
+                        <td>
+                            {{ ticket.title }}
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <th>Category</th>
+                        <td>
+                            {{ ticket.category }}
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <th>Priority</th>
+
+                        <td>
+
+                            {% if ticket.priority == "Critical" %}
+
+                                <span class="badge bg-danger">
+                                    Critical
+                                </span>
+
+                            {% elif ticket.priority == "High" %}
+
+                                <span class="badge bg-warning text-dark">
+                                    High
+                                </span>
+
+                            {% elif ticket.priority == "Medium" %}
+
+                                <span class="badge bg-primary">
+                                    Medium
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-secondary">
+                                    {{ ticket.priority }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+                    </tr>
+
+
+                    <!-- Status -->
+                    <tr>
+                        <th>Status</th>
+
+                        <td>
+
+                            {% if current_user.role|lower == "admin" %}
+
+                                <form method="POST"
+                                      action="{{ url_for('tickets.update_status', id=ticket.id) }}"
+                                      class="d-flex gap-2">
+
+
+                                    <select name="status"
+                                            class="form-select">
+
+
+                                        <option value="Open"
+                                            {% if ticket.status == "Open" %}selected{% endif %}>
+                                            Open
+                                        </option>
+
+
+                                        <option value="In Progress"
+                                            {% if ticket.status == "In Progress" %}selected{% endif %}>
+                                            In Progress
+                                        </option>
+
+
+                                        <option value="Pending"
+                                            {% if ticket.status == "Pending" %}selected{% endif %}>
+                                            Pending
+                                        </option>
+
+
+                                        <option value="Resolved"
+                                            {% if ticket.status == "Resolved" %}selected{% endif %}>
+                                            Resolved
+                                        </option>
+
+
+                                        <option value="Closed"
+                                            {% if ticket.status == "Closed" %}selected{% endif %}>
+                                            Closed
+                                        </option>
+
+
+                                    </select>
+
+
+                                    <button type="submit"
+                                            class="btn btn-success">
+                                        Update
+                                    </button>
+
+
+                                </form>
+
+
+                            {% else %}
+
+
+                                {% if ticket.status == "Open" %}
+
+                                    <span class="badge bg-success">
+                                        Open
+                                    </span>
+
+
+                                {% elif ticket.status == "In Progress" %}
+
+                                    <span class="badge bg-primary">
+                                        In Progress
+                                    </span>
+
+
+                                {% elif ticket.status == "Pending" %}
+
+                                    <span class="badge bg-warning text-dark">
+                                        Pending
+                                    </span>
+
+
+                                {% elif ticket.status == "Resolved" %}
+
+                                    <span class="badge bg-info">
+                                        Resolved
+                                    </span>
+
+
+                                {% else %}
+
+                                    <span class="badge bg-secondary">
+                                        Closed
+                                    </span>
+
+
+                                {% endif %}
+
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+
+
+                    <tr>
+                        <th>Created By</th>
+
+                        <td>
+                            {{ ticket.created_by or "-" }}
+                        </td>
+                    </tr>
+
+
+
+                    <tr>
+                        <th>Assigned To</th>
+
+                        <td>
+                            {{ ticket.assigned_to or "-" }}
+                        </td>
+                    </tr>
+
+
+
+                    <tr>
+                        <th>Created Date</th>
+
+                        <td>
+                            {{ ticket.created_at }}
+                        </td>
+                    </tr>
+
+
+
+                    <tr>
+                        <th>Description</th>
+
+                        <td>
+
+                            <div style="white-space: pre-wrap;">
+                                {{ ticket.description }}
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+
+                    <tr>
+                        <th>Attachment</th>
+
+
+                        <td>
+
+                            {% if ticket.attachment %}
+
+
+                                <span class="me-3">
+                                    📎 {{ ticket.attachment }}
+                                </span>
+
+
+                                <a href="{{ url_for('tickets.download_attachment', id=ticket.id) }}"
+                                   class="btn btn-sm btn-outline-primary">
+
+                                    ⬇ Download
+
+                                </a>
+
+
+                            {% else %}
+
+
+                                <span class="text-muted">
+                                    No Attachment
+                                </span>
+
+
+                            {% endif %}
+
+
+                        </td>
+
+                    </tr>
+
+
+
+                </table>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+
+    <!-- Comments / Work Notes -->
+
+    <div class="card shadow-sm mt-4 mb-5">
+
+
+        <div class="card-header">
+
+            <h5 class="mb-0">
+                💬 Comments / Work Notes
+            </h5>
+
+        </div>
+
+
+
+        <div class="card-body">
+
+
+            <!-- Add Comment Form -->
+
+            <form method="POST"
+                  action="{{ url_for('tickets.add_comment', id=ticket.id) }}">
+
+
+                <div class="mb-3">
+
+                    <textarea
+                        name="comment"
+                        class="form-control"
+                        rows="4"
+                        placeholder="Add comment or work note..."
+                        required></textarea>
+
+
+                </div>
+
+
+
+                <button type="submit"
+                        class="btn btn-primary">
+
+                    Add Comment
+
+                </button>
+
+
+            </form>
+
+
+
+            <hr class="my-4">
+
+
+
+            <!-- Comment History -->
+
+
+            {% if ticket.comments %}
+
+
+                {% for comment in ticket.comments|reverse %}
+
+
+                    <div class="border rounded p-3 mb-3">
+
+
+                        <div class="d-flex justify-content-between align-items-center">
+
+
+                            <strong>
+                                {{ comment.created_by }}
+                            </strong>
+
+
+                            <small class="text-muted">
+                                {{ comment.created_at }}
+                            </small>
+
+
+                        </div>
+
+
+
+                        <hr>
+
+
+
+                        <div style="white-space: pre-wrap;">
+                            {{ comment.comment }}
+                        </div>
+
+
+
+                    </div>
+
+
+
+                {% endfor %}
+
+
+
+            {% else %}
+
+
+                <div class="text-center text-muted py-3">
+
+                    No comments added yet.
+
+                </div>
+
+
+            {% endif %}
+
+
+
+        </div>
+
+
+    </div>
+
+
+
+</div>
+
+
+{% endblock %}

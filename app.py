@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 from flask_login import LoginManager
-
+from datetime import timedelta
 from config import Config
 from models import db, User
 
@@ -22,6 +22,20 @@ migrate = Migrate(app, db)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "auth.index"
+@app.template_filter("ist")
+def convert_to_ist(value):
+
+    if value is None:
+        return "-"
+
+    ist_time = value + timedelta(
+        hours=5,
+        minutes=30
+    )
+
+    return ist_time.strftime(
+        "%d-%m-%Y %I:%M %p"
+    )
 
 
 @login_manager.user_loader

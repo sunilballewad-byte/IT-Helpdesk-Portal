@@ -84,3 +84,86 @@ class Asset(db.Model):
 
     def __repr__(self):
         return f"<Asset {self.asset_id}>"
+# =========================
+# Ticket Comment Model
+# =========================
+class TicketComment(db.Model):
+    __tablename__ = "ticket_comments"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    ticket_id = db.Column(
+        db.Integer,
+        db.ForeignKey("tickets.id"),
+        nullable=False
+    )
+
+    comment = db.Column(
+        db.Text,
+        nullable=False
+    )
+
+    created_by = db.Column(
+        db.String(120),
+        nullable=False
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=db.func.current_timestamp()
+    )
+
+    ticket = db.relationship(
+        "Ticket",
+        backref=db.backref(
+            "comments",
+            lazy=True,
+            cascade="all, delete-orphan"
+        )
+    )
+
+    def __repr__(self):
+        return f"<TicketComment {self.id}>"
+
+
+# =========================
+# Ticket Activity Model
+# =========================
+class TicketActivity(db.Model):
+    __tablename__ = "ticket_activities"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    ticket_id = db.Column(
+        db.Integer,
+        db.ForeignKey("tickets.id"),
+        nullable=False
+    )
+
+    action = db.Column(
+        db.String(255),
+        nullable=False
+    )
+
+    performed_by = db.Column(
+        db.String(120),
+        nullable=False
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=db.func.current_timestamp()
+    )
+
+    ticket = db.relationship(
+        "Ticket",
+        backref=db.backref(
+            "activities",
+            lazy=True,
+            cascade="all, delete-orphan"
+        )
+    )
+
+    def __repr__(self):
+        return f"<TicketActivity {self.id}>"
+
