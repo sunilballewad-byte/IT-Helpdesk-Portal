@@ -120,12 +120,21 @@ def view_tickets():
 
     query = Ticket.query
 
-    if not is_admin():
-        query = query.filter(Ticket.created_by == current_user.email)
+    if current_user.role and current_user.role.lower() == "admin":
+        pass
+    elif current_user.role and current_user.role.lower() == "technician":
+        query = query.filter(
+            Ticket.assigned_to == current_user.email
+        )
+    else:
+        query = query.filter(
+            Ticket.created_by == current_user.email
+        )
+
     if ticket_filter == "escalated":
         query = query.filter(
             Ticket.escalated_at.isnot(None),
-            ~Ticket.status.in_(["Resolved", "Closed"])
+            ~Ticket.status.in_( ["Resolved", "Closed"] )
         )
     elif ticket_filter == "active_sla":
         query = query.filter(
@@ -181,14 +190,18 @@ def view_tickets():
         )
 
     tickets_list = query.order_by(Ticket.id.desc()).all()
-
+    users = User.query.filter(
+        User.is_active.is_(True),
+        User.role == "Technician"
+    ).order_by(User.name.asc()).all()
     return render_template(
-        "view_tickets.html",
-        tickets=tickets_list,
-            search=search,
+    "view_tickets.html",
+    tickets=tickets_list,
+    users=users,
+    search=search,
     ticket_filter=ticket_filter,
     now=datetime.utcnow()
-    )
+)
 
 
 # =====================================
@@ -275,17 +288,22 @@ def ticket_details(id):
     if not ticket:
         abort(404)
 
-    if not is_admin() and ticket.created_by != current_user.email:
+    if current_user.role and current_user.role.lower() == "admin":
+        pass
+    elif current_user.role and current_user.role.lower() == "technician":
+        if ticket.assigned_to != current_user.email:
+            abort(403)
+    elif ticket.created_by != current_user.email:
         abort(403)
 
     users = User.query.filter(User.is_active.is_(True)).order_by(User.name.asc()).all()
 
     return render_template(
-    "ticket_details.html",
-    ticket=ticket,
-    users=users,
-    now=datetime.utcnow()
-)
+        "ticket_details.html",
+        ticket=ticket,
+        users=users,
+        now=datetime.utcnow()
+    )
 
 
 # =====================================
@@ -299,7 +317,12 @@ def add_comment(id):
     if not ticket:
         abort(404)
 
-    if not is_admin() and ticket.created_by != current_user.email:
+    if current_user.role and current_user.role.lower() == "admin":
+        pass
+    elif current_user.role and current_user.role.lower() == "technician":
+        if ticket.assigned_to != current_user.email:
+            abort(403)
+    elif ticket.created_by != current_user.email:
         abort(403)
 
     comment_text = request.form.get("comment", "").strip()
@@ -392,13 +415,20 @@ def assign_ticket(id):
 @tickets.route("/tickets/<int:id>/status", methods=["POST"])
 @login_required
 def update_status(id):
-    if not is_admin():
-        abort(403)
-
     ticket = db.session.get(Ticket, id)
 
     if not ticket:
         abort(404)
+
+    if current_user.role and current_user.role.lower() == "admin":
+        pass
+
+    elif current_user.role and current_user.role.lower() == "technician":
+        if ticket.assigned_to != current_user.email:
+            abort(403)
+
+    else:
+        abort(403)
 
     old_status = ticket.status
     new_status = request.form.get("status")

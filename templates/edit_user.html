@@ -84,7 +84,10 @@
                         {% if user.role == "Employee" %}selected{% endif %}>
                         Employee
                     </option>
-
+<option value="Technician"
+    {% if user.role == "Technician" %}selected{% endif %}>
+    Technician
+</option>
                     <option value="Admin"
                         {% if user.role == "Admin" %}selected{% endif %}>
                         Admin

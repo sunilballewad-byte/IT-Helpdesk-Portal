@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for
+from flask import Blueprint, render_template
 from flask_login import login_required, current_user
 from datetime import datetime
 from models import Ticket, Asset
@@ -9,15 +9,17 @@ dashboard = Blueprint("dashboard", __name__)
 @dashboard.route("/dashboard")
 @login_required
 def dashboard_home():
-    if current_user.role and current_user.role.lower() == "employee":
-        return redirect(url_for("tickets.view_tickets"))
-
-    is_technician = current_user.role and current_user.role.lower() == "technician"
-
+    is_technician = (
+        current_user.role
+        and current_user.role.lower() == "technician"
+    )
     # ---------------- Tickets ----------------
     ticket_query = Ticket.query
+
     if is_technician:
-        ticket_query = ticket_query.filter(Ticket.assigned_to == current_user.email)
+        ticket_query = ticket_query.filter(
+            Ticket.assigned_to == current_user.email
+        )
 
     total_tickets = ticket_query.count()
 
@@ -35,61 +37,63 @@ def dashboard_home():
 
     # ---------------- SLA Summary ----------------
     now = datetime.utcnow()
-
     sla_query = Ticket.query
+
     if is_technician:
         sla_query = sla_query.filter(
             Ticket.assigned_to == current_user.email
         )
-
-    active_sla = sla_query.filter(
+    active_sla = Ticket.query.filter(
         Ticket.sla_due_at.isnot(None),
         Ticket.sla_due_at >= now,
-        ~Ticket.status.in_(["Resolved", "Closed"]) 
+        ~Ticket.status.in_(["Resolved", "Closed"])
     ).count()
 
-    overdue_sla = sla_query.filter(
+    overdue_sla = Ticket.query.filter(
         Ticket.sla_due_at.isnot(None),
         Ticket.sla_due_at < now,
-        ~Ticket.status.in_(["Resolved", "Closed"]) 
+        ~Ticket.status.in_(["Resolved", "Closed"])
     ).count()
 
-    critical_tickets = sla_query.filter_by(
+    critical_tickets = Ticket.query.filter_by(
         priority="Critical"
     ).count()
 
-    sla_met = sla_query.filter(
+    sla_met = Ticket.query.filter(
         Ticket.sla_due_at.isnot(None),
         Ticket.resolved_at.isnot(None),
         Ticket.resolved_at <= Ticket.sla_due_at
     ).count()
 
-    sla_breached = sla_query.filter(
+    sla_breached = Ticket.query.filter(
         Ticket.sla_due_at.isnot(None),
         Ticket.resolved_at.isnot(None),
         Ticket.resolved_at > Ticket.sla_due_at
     ).count()
-
-    escalated_tickets = sla_query.filter(
+    escalated_tickets = Ticket.query.filter(
         Ticket.escalated_at.isnot(None),
-        ~Ticket.status.in_(["Resolved", "Closed"]) 
+        ~Ticket.status.in_(["Resolved", "Closed"])
     ).count()
 
-    escalation_l1 = sla_query.filter_by(
+    escalation_l1 = Ticket.query.filter_by(
         escalation_level=1
     ).count()
 
-    escalation_l2 = sla_query.filter_by(
+    escalation_l2 = Ticket.query.filter_by(
         escalation_level=2
     ).count()
 
-    escalation_l3 = sla_query.filter(
+    escalation_l3 = Ticket.query.filter(
         Ticket.escalation_level >= 3
     ).count()
 
     total_completed_sla = sla_met + sla_breached
+
     if total_completed_sla > 0:
-        sla_compliance = round((sla_met / total_completed_sla) * 100, 1)
+        sla_compliance = round(
+            (sla_met / total_completed_sla) * 100,
+            1
+        )
     else:
         sla_compliance = 0
     # ---------------- Assets ----------------
@@ -108,15 +112,11 @@ def dashboard_home():
         .limit(5)
         .all()
     )
-    my_assigned_tickets = Ticket.query.filter(
-        Ticket.assigned_to == current_user.email,
-        ~Ticket.status.in_( ["Resolved", "Closed"]) 
-    ).count()
+
     return render_template(
         "dashboard.html",
 
         total_tickets=total_tickets,
-        my_assigned_tickets=my_assigned_tickets,
         open_tickets=open_tickets,
         closed_tickets=closed_tickets,
         pending_tickets=pending_tickets,

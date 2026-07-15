@@ -6,11 +6,14 @@
 
     <hr>
 
-    <!-- Dashboard -->
-    <a href="{{ url_for('dashboard.dashboard_home') }}">
-        🏠 Dashboard
-    </a>
+    {% if current_user.role|lower != "employee" %}
 
+<!-- Dashboard -->
+<a href="{{ url_for('dashboard.dashboard_home') }}">
+    🏠 Dashboard
+</a>
+
+{% endif %}
     <!-- Tickets -->
     <a href="{{ url_for('tickets.create_ticket') }}">
         ➕ Create Ticket

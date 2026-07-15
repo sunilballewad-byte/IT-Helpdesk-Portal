@@ -57,17 +57,23 @@
 
                     {% if user.role == "Admin" %}
 
-                        <span class="badge bg-danger">
-                            Admin
-                        </span>
+    <span class="badge bg-danger">
+        Admin
+    </span>
 
-                    {% else %}
+{% elif user.role == "Technician" %}
 
-                        <span class="badge bg-primary">
-                            Employee
-                        </span>
+    <span class="badge bg-warning text-dark">
+        Technician
+    </span>
 
-                    {% endif %}
+{% else %}
+
+    <span class="badge bg-primary">
+        Employee
+    </span>
+
+{% endif %}
 
                 </td>
 

@@ -3,424 +3,97 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-
 <div class="container mt-5">
+    {% if current_user.role|lower == "technician" %}
+        <h1 class="mb-2">Welcome, {{ current_user.name }}</h1>
+        <p class="text-muted">Technician Dashboard</p>
 
-    <h1 class="mb-4">Welcome to IT Helpdesk Portal</h1>
+        <div class="alert alert-info shadow-sm mb-4">
+            <strong>My Work Summary</strong><br>
+            Assigned Tickets: <strong>{{ total_tickets }}</strong> |
+            Open: <strong>{{ open_tickets }}</strong> |
+            Pending: <strong>{{ pending_tickets }}</strong> |
+            Escalated: <strong>{{ escalated_tickets }}</strong>
+        </div>
 
-    <hr>
-
-    <!-- Ticket Summary -->
-    <div class="row">
-
-        <div class="col-md mb-3">
-            <div class="card shadow text-center">
-                <div class="card-body">
-                    <h5>Total Tickets</h5>
-                    <h2>{{ total_tickets }}</h2>
-                </div>
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <a href="{{ url_for('tickets.view_tickets') }}" class="text-decoration-none text-dark">
+                    <div class="card shadow border-primary text-center">
+                        <div class="card-body">
+                            <h5>My Active Tickets</h5>
+                            <h2>{{ my_assigned_tickets }}</h2>
+                        </div>
+                    </div>
+                </a>
             </div>
         </div>
-
-        <div class="col-md mb-3">
-            <div class="card shadow text-center">
-                <div class="card-body">
-                    <h5>Open Tickets</h5>
-                    <h2>{{ open_tickets }}</h2>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md mb-3">
-            <div class="card shadow text-center">
-                <div class="card-body">
-                    <h5>Closed Tickets</h5>
-                    <h2>{{ closed_tickets }}</h2>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md mb-3">
-            <div class="card shadow text-center">
-                <div class="card-body">
-                    <h5>Pending Tickets</h5>
-                    <h2>{{ pending_tickets }}</h2>
-                </div>
-            </div>
-        </div>
-
-    </div>
-<!-- SLA Summary -->
-<h3 class="mt-4">SLA Overview</h3>
-
-<div class="row mt-3">
-
-    <div class="col-md mb-3">
-    <a href="{{ url_for('tickets.view_tickets', filter='active_sla') }}"
-       class="text-decoration-none text-dark">
-
-        <div class="card shadow text-center border-primary">
-            <div class="card-body">
-                <h5>Active SLA</h5>
-                <h2>{{ active_sla }}</h2>
-            </div>
-        </div>
-
-    </a>
-</div>
-<div class="col-md mb-3">
-    <a href="{{ url_for('tickets.view_tickets', filter='overdue_sla') }}"
-       class="text-decoration-none text-dark">
-
-        <div class="card shadow text-center border-danger">
-            <div class="card-body">
-                <h5>Overdue SLA</h5>
-                <h2>{{ overdue_sla }}</h2>
-            </div>
-        </div>
-
-    </a>
-</div>
-    <div class="col-md mb-3">
-    <a href="{{ url_for('tickets.view_tickets', filter='escalated') }}"
-       class="text-decoration-none text-dark">
-
-        <div class="card shadow text-center border-danger">
-            <div class="card-body">
-                <h5>Escalated Tickets</h5>
-                <h2>{{ escalated_tickets }}</h2>
-            </div>
-        </div>
-
-    </a>
-</div>
-
-    <div class="col-md mb-3">
-        <div class="card shadow text-center border-warning">
-            <div class="card-body">
-                <h5>Critical Tickets</h5>
-                <h2>{{ critical_tickets }}</h2>
-            </div>
-        </div>
-    </div>
-
-<<div class="col-md mb-3">
-    <a href="{{ url_for('tickets.view_tickets', filter='sla_met') }}"
-       class="text-decoration-none text-dark">
-
-        <div class="card shadow text-center border-success">
-            <div class="card-body">
-                <h5>SLA Met</h5>
-                <h2>{{ sla_met }}</h2>
-            </div>
-        </div>
-
-    </a>
-</div>
-
-<div class="col-md mb-3">
-    <a href="{{ url_for('tickets.view_tickets', filter='sla_breached') }}"
-       class="text-decoration-none text-dark">
-
-        <div class="card shadow text-center border-danger">
-            <div class="card-body">
-                <h5>SLA Breached</h5>
-                <h2>{{ sla_breached }}</h2>
-            </div>
-        </div>
-
-    </a>
-</div>
-<!-- Escalation Level Summary -->
-<h3 class="mt-4">Escalation Levels</h3>
-
-<div class="row mt-3">
-
-    <div class="col-md-4 mb-3">
-    <a href="{{ url_for('tickets.view_tickets', filter='escalation_l1') }}"
-       class="text-decoration-none text-dark">
-        <div class="card shadow text-center border-warning">
-            <div class="card-body">
-                <h5>Level 1 Escalation</h5>
-                <h2>{{ escalation_l1 }}</h2>
-            </div>
-        </div>
-    </a>
-</div>
-
-    <<div class="col-md-4 mb-3">
-    <a href="{{ url_for('tickets.view_tickets', filter='escalation_l2') }}"
-       class="text-decoration-none text-dark">
-        <div class="card shadow text-center border-danger">
-            <div class="card-body">
-                <h5>Level 2 Escalation</h5>
-                <h2>{{ escalation_l2 }}</h2>
-            </div>
-        </div>
-    </a>
-</div>
-    <div class="col-md-4 mb-3">
-    <a href="{{ url_for('tickets.view_tickets', filter='escalation_l3') }}"
-       class="text-decoration-none text-dark">
-        <div class="card shadow text-center border-dark">
-            <div class="card-body">
-                <h5>Level 3 Escalation</h5>
-                <h2>{{ escalation_l3 }}</h2>
-            </div>
-        </div>
-    </a>
-</div>
-<!-- SLA Compliance -->
-<div class="card shadow mb-4">
-
-    <div class="card-body">
-
-        <div class="d-flex justify-content-between mb-2">
-            <h5 class="mb-0">SLA Compliance</h5>
-
-            <strong>
-                {{ sla_compliance }}%
-            </strong>
-        </div>
-
-        <div class="progress" style="height: 25px;">
-
-            <div class="progress-bar"
-                 role="progressbar"
-                 style="width: {{ sla_compliance }}%;"
-                 aria-valuenow="{{ sla_compliance }}"
-                 aria-valuemin="0"
-                 aria-valuemax="100">
-
-                {{ sla_compliance }}%
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-    <!-- Asset Summary -->
-    <div class="row mt-3">
-
-        <div class="col-md mb-3">
-            <div class="card shadow text-center">
-                <div class="card-body">
-                    <h5>Total Assets</h5>
-                    <h2>{{ total_assets }}</h2>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md mb-3">
-            <div class="card shadow text-center">
-                <div class="card-body">
-                    <h5>Assigned Assets</h5>
-                    <h2>{{ assigned_assets }}</h2>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md mb-3">
-            <div class="card shadow text-center">
-                <div class="card-body">
-                    <h5>Available Assets</h5>
-                    <h2>{{ available_assets }}</h2>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md mb-3">
-            <div class="card shadow text-center">
-                <div class="card-body">
-                    <h5>Repair Assets</h5>
-                    <h2>{{ repair_assets }}</h2>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Charts -->
-    <hr class="my-4">
-
-    <div class="row">
-
-        <div class="col-md-6 mb-4">
-            <div class="card shadow">
-                <div class="card-header fw-bold">
-                    ðŸ“Š Ticket Status
-                </div>
-                <div class="card-body">
-                    <canvas id="ticketChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 mb-4">
-            <div class="card shadow">
-                <div class="card-header fw-bold">
-                    ðŸ’» Asset Status
-                </div>
-                <div class="card-body">
-                    <canvas id="assetChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Recent Tickets -->
-    <h3 class="mt-4">Recent Tickets</h3>
-    <hr>
-
-    <table class="table table-bordered table-hover">
-
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Ticket No</th>
-                <th>Title</th>
-                <th>Category</th>
-                <th>Priority</th>
-                <th>Status</th>
-                <th>SLA</th>
-            </tr>
-        </thead>
-
-        <tbody>
-
-        {% if recent_tickets %}
-
-            {% for ticket in recent_tickets %}
-            <tr>
-
-                <td>{{ ticket.id }}</td>
-                <td>{{ ticket.ticket_number }}</td>
-                <td>{{ ticket.title }}</td>
-                <td>{{ ticket.category }}</td>
-                <td>{{ ticket.priority }}</td>
-
-                <td>
-                    {% if ticket.status == "Open" %}
-                        <span class="badge bg-success">{{ ticket.status }}</span>
-
-                    {% elif ticket.status == "Pending" %}
-                        <span class="badge bg-warning text-dark">{{ ticket.status }}</span>
-
-                    {% elif ticket.status == "Closed" %}
-                        <span class="badge bg-secondary">{{ ticket.status }}</span>
-
-                    {% else %}
-                        <span class="badge bg-info">{{ ticket.status }}</span>
-                    {% endif %}
-                </td>
-<td>
-    {% if ticket.sla_due_at %}
-
-        {% if ticket.resolved_at %}
-
-            {% if ticket.resolved_at <= ticket.sla_due_at %}
-                <span class="badge bg-success">SLA MET</span>
-            {% else %}
-                <span class="badge bg-danger">BREACHED</span>
-            {% endif %}
-
-        {% elif ticket.sla_due_at < now %}
-
-            <span class="badge bg-danger">OVERDUE</span>
-
-        {% else %}
-
-            <span class="badge bg-primary">ACTIVE</span>
-
-        {% endif %}
-
     {% else %}
-        -
+        <h1 class="mb-4">Welcome to IT Helpdesk Portal</h1>
     {% endif %}
-</td>
-            </tr>
-            {% endfor %}
 
+    <hr>
+
+    <h3 class="mt-4">Ticket Summary</h3>
+    <div class="row mt-3">
+        <div class="col-md mb-3"><div class="card shadow text-center"><div class="card-body"><h5>Total Tickets</h5><h2>{{ total_tickets }}</h2></div></div></div>
+        <div class="col-md mb-3"><div class="card shadow text-center"><div class="card-body"><h5>Open Tickets</h5><h2>{{ open_tickets }}</h2></div></div></div>
+        <div class="col-md mb-3"><div class="card shadow text-center"><div class="card-body"><h5>Closed Tickets</h5><h2>{{ closed_tickets }}</h2></div></div></div>
+        <div class="col-md mb-3"><div class="card shadow text-center"><div class="card-body"><h5>Pending Tickets</h5><h2>{{ pending_tickets }}</h2></div></div></div>
+    </div>
+
+    <h3 class="mt-4">SLA Overview</h3>
+    <div class="row mt-3">
+        <div class="col-md mb-3"><a href="{{ url_for('tickets.view_tickets', filter='active_sla') }}" class="text-decoration-none text-dark"><div class="card shadow text-center border-primary"><div class="card-body"><h5>Active SLA</h5><h2>{{ active_sla }}</h2></div></div></a></div>
+        <div class="col-md mb-3"><a href="{{ url_for('tickets.view_tickets', filter='overdue_sla') }}" class="text-decoration-none text-dark"><div class="card shadow text-center border-danger"><div class="card-body"><h5>Overdue SLA</h5><h2>{{ overdue_sla }}</h2></div></div></a></div>
+        <div class="col-md mb-3"><a href="{{ url_for('tickets.view_tickets', filter='escalated') }}" class="text-decoration-none text-dark"><div class="card shadow text-center border-danger"><div class="card-body"><h5>Escalated Tickets</h5><h2>{{ escalated_tickets }}</h2></div></div></a></div>
+        <div class="col-md mb-3"><div class="card shadow text-center border-warning"><div class="card-body"><h5>Critical Tickets</h5><h2>{{ critical_tickets }}</h2></div></div></div>
+        <div class="col-md mb-3"><a href="{{ url_for('tickets.view_tickets', filter='sla_met') }}" class="text-decoration-none text-dark"><div class="card shadow text-center border-success"><div class="card-body"><h5>SLA Met</h5><h2>{{ sla_met }}</h2></div></div></a></div>
+        <div class="col-md mb-3"><a href="{{ url_for('tickets.view_tickets', filter='sla_breached') }}" class="text-decoration-none text-dark"><div class="card shadow text-center border-danger"><div class="card-body"><h5>SLA Breached</h5><h2>{{ sla_breached }}</h2></div></div></a></div>
+    </div>
+
+    <h3 class="mt-4">Escalation Levels</h3>
+    <div class="row mt-3">
+        <div class="col-md-4 mb-3"><a href="{{ url_for('tickets.view_tickets', filter='escalation_l1') }}" class="text-decoration-none text-dark"><div class="card shadow text-center border-warning"><div class="card-body"><h5>Level 1 Escalation</h5><h2>{{ escalation_l1 }}</h2></div></div></a></div>
+        <div class="col-md-4 mb-3"><a href="{{ url_for('tickets.view_tickets', filter='escalation_l2') }}" class="text-decoration-none text-dark"><div class="card shadow text-center border-danger"><div class="card-body"><h5>Level 2 Escalation</h5><h2>{{ escalation_l2 }}</h2></div></div></a></div>
+        <div class="col-md-4 mb-3"><a href="{{ url_for('tickets.view_tickets', filter='escalation_l3') }}" class="text-decoration-none text-dark"><div class="card shadow text-center border-dark"><div class="card-body"><h5>Level 3 Escalation</h5><h2>{{ escalation_l3 }}</h2></div></div></a></div>
+    </div>
+
+    <div class="card shadow mb-4"><div class="card-body"><div class="d-flex justify-content-between mb-2"><h5 class="mb-0">SLA Compliance</h5><strong>{{ sla_compliance }}%</strong></div><div class="progress" style="height: 25px;"><div class="progress-bar" role="progressbar" style="width: {{ sla_compliance|default(0) }}%;" aria-valuenow="{{ sla_compliance|default(0) }}" aria-valuemin="0" aria-valuemax="100">{{ sla_compliance|default(0) }}%</div></div></div></div>
+
+    <h3 class="mt-4">Asset Summary</h3>
+    <div class="row mt-3">
+        <div class="col-md mb-3"><div class="card shadow text-center"><div class="card-body"><h5>Total Assets</h5><h2>{{ total_assets }}</h2></div></div></div>
+        <div class="col-md mb-3"><div class="card shadow text-center"><div class="card-body"><h5>Assigned Assets</h5><h2>{{ assigned_assets }}</h2></div></div></div>
+        <div class="col-md mb-3"><div class="card shadow text-center"><div class="card-body"><h5>Available Assets</h5><h2>{{ available_assets }}</h2></div></div></div>
+        <div class="col-md mb-3"><div class="card shadow text-center"><div class="card-body"><h5>Repair Assets</h5><h2>{{ repair_assets }}</h2></div></div></div>
+    </div>
+
+    <hr class="my-4">
+    <div class="row">
+        <div class="col-md-6 mb-4"><div class="card shadow"><div class="card-header fw-bold">Ticket Status</div><div class="card-body"><canvas id="ticketChart"></canvas></div></div></div>
+        <div class="col-md-6 mb-4"><div class="card shadow"><div class="card-header fw-bold">Asset Status</div><div class="card-body"><canvas id="assetChart"></canvas></div></div></div>
+    </div>
+
+    <h3 class="mt-4">Recent Tickets</h3><hr>
+    <div class="table-responsive"><table class="table table-bordered table-hover"><thead class="table-dark"><tr><th>ID</th><th>Ticket No</th><th>Title</th><th>Category</th><th>Priority</th><th>Status</th><th>SLA</th></tr></thead><tbody>
+        {% for ticket in recent_tickets %}
+            <tr><td>{{ ticket.id }}</td><td>{{ ticket.ticket_number }}</td><td>{{ ticket.title }}</td><td>{{ ticket.category }}</td><td>{{ ticket.priority }}</td><td>{% if ticket.status == "Open" %}<span class="badge bg-success">{{ ticket.status }}</span>{% elif ticket.status == "Pending" %}<span class="badge bg-warning text-dark">{{ ticket.status }}</span>{% elif ticket.status == "Closed" %}<span class="badge bg-secondary">{{ ticket.status }}</span>{% else %}<span class="badge bg-info">{{ ticket.status }}</span>{% endif %}</td><td>{% if not ticket.sla_due_at %}-{% elif ticket.resolved_at and ticket.resolved_at <= ticket.sla_due_at %}<span class="badge bg-success">SLA MET</span>{% elif ticket.resolved_at or ticket.sla_due_at < now %}<span class="badge bg-danger">BREACHED</span>{% else %}<span class="badge bg-primary">ACTIVE</span>{% endif %}</td></tr>
         {% else %}
-
-            <tr>
-                <td colspan="6" class="text-center">
-                    No Recent Tickets Found
-                </td>
-            </tr>
-
-        {% endif %}
-
-        </tbody>
-
-    </table>
-
+            <tr><td colspan="7" class="text-center">No Recent Tickets Found</td></tr>
+        {% endfor %}
+    </tbody></table></div>
 </div>
-
 {% endblock %}
 
 {% block scripts %}
-
-/chart.js"></script>
-
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-
     const ticketCtx = document.getElementById("ticketChart");
-
-    new Chart(ticketCtx, {
-        type: "pie",
-        data: {
-            labels: ["Open", "Closed", "Pending"],
-            datasets: [{
-                data: [
-                    {{ open_tickets }},
-                    {{ closed_tickets }},
-                    {{ pending_tickets }}
-                ],
-                backgroundColor: [
-                    "#198754",
-                    "#6c757d",
-                    "#ffc107"
-                ]
-            }]
-        }
-    });
-
     const assetCtx = document.getElementById("assetChart");
-
-    new Chart(assetCtx, {
-        type: "bar",
-        data: {
-            labels: ["Available", "Assigned", "Repair"],
-            datasets: [{
-                label: "Assets",
-                data: [
-                    {{ available_assets }},
-                    {{ assigned_assets }},
-                    {{ repair_assets }}
-                ],
-                backgroundColor: [
-                    "#0d6efd",
-                    "#198754",
-                    "#dc3545"
-                ]
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-
+    if (ticketCtx) new Chart(ticketCtx, { type: "pie", data: { labels: ["Open", "Closed", "Pending"], datasets: [{ data: [{{ open_tickets|default(0) }}, {{ closed_tickets|default(0) }}, {{ pending_tickets|default(0) }}], backgroundColor: ["#198754", "#6c757d", "#ffc107"] }] }, options: { responsive: true } });
+    if (assetCtx) new Chart(assetCtx, { type: "bar", data: { labels: ["Available", "Assigned", "Repair"], datasets: [{ label: "Assets", data: [{{ available_assets|default(0) }}, {{ assigned_assets|default(0) }}, {{ repair_assets|default(0) }}], backgroundColor: ["#0d6efd", "#198754", "#dc3545"] }] }, options: { responsive: true, scales: { y: { beginAtZero: true } } } });
 });
 </script>
-
 {% endblock %}
+
